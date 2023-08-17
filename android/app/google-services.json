@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "747924766622",
+    "project_id": "moviable-xetz-app",
+    "storage_bucket": "moviable-xetz-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:747924766622:android:bfa6c0d24e99a23fc0208f",
+        "android_client_info": {
+          "package_name": "com.example.moviable"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "747924766622-94og9hlaolm64649v9c0kcr28bsv679c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAO7MrbQN7pZI7J4sznJLg2FGAIzfo9k4M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "747924766622-94og9hlaolm64649v9c0kcr28bsv679c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
