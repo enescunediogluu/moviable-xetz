@@ -56,29 +56,25 @@ class _MainPageState extends State<MainPage> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        centerTitle: true,
-        actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const SearchPage(),
-                ),
-              );
-            },
-            icon: const CircleAvatar(
-              backgroundColor: Colors.amber,
-              child: Icon(Icons.search),
-            ),
-          )
-        ],
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: Text(
-          'moviable',
-          style: GoogleFonts.sofia(color: Colors.amber, fontSize: 60),
-        ),
-      ),
+          centerTitle: true,
+          /* actions: [
+            IconButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const SearchPage(),
+                  ),
+                );
+              },
+              icon: const CircleAvatar(
+                backgroundColor: Colors.amber,
+                child: Icon(Icons.search),
+              ),
+            )
+          ], */
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          title: const TitleWidget()),
       body: ListView(
         children: [
           const SizedBox(
@@ -90,6 +86,39 @@ class _MainPageState extends State<MainPage> {
           NotReleasedMovies(notReleased: moviesNotReleased),
         ],
       ),
+    );
+  }
+}
+
+class TitleWidget extends StatelessWidget {
+  const TitleWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        SizedBox(
+          height: 40,
+          child: Image.asset(
+            "assets/moviable_icon.png",
+            color: Colors.amber.withOpacity(0.9),
+          ),
+        ),
+        const SizedBox(
+          width: 10,
+        ),
+        Text(
+          'moviable',
+          style: GoogleFonts.titilliumWeb(
+            color: Colors.white,
+            fontSize: 50,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
     );
   }
 }
