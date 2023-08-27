@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:moviable/pages/auth/login_page.dart';
-import 'package:moviable/pages/main/main_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,7 +16,7 @@ class MyApp extends StatelessWidget {
           brightness: Brightness.dark,
           primaryColor: Colors.amber,
           scaffoldBackgroundColor: const Color(0xff191A19)),
-      home: const MainPage(),
+      home: const LoginPage(),
     );
   }
 }

@@ -2,21 +2,20 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:moviable/pages/main/search_page.dart';
 import 'package:moviable/widgets/home_widgets/not_released_movies.dart';
 import 'package:moviable/widgets/home_widgets/toprated.dart';
 import 'package:moviable/widgets/home_widgets/trending.dart';
 import 'package:moviable/widgets/home_widgets/tv_shows.dart';
 import 'package:tmdb_api/tmdb_api.dart';
 
-class MainPage extends StatefulWidget {
-  const MainPage({super.key});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
   @override
-  State<MainPage> createState() => _MainPageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _HomePageState extends State<HomePage> {
   List trendingMovies = [];
   List topRatedMovies = [];
   List popularTvShows = [];
@@ -57,21 +56,6 @@ class _MainPageState extends State<MainPage> {
       backgroundColor: Colors.black,
       appBar: AppBar(
           centerTitle: true,
-          /* actions: [
-            IconButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const SearchPage(),
-                  ),
-                );
-              },
-              icon: const CircleAvatar(
-                backgroundColor: Colors.amber,
-                child: Icon(Icons.search),
-              ),
-            )
-          ], */
           backgroundColor: Colors.transparent,
           elevation: 0,
           title: const TitleWidget()),
