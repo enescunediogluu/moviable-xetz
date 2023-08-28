@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:moviable/constants/colors.dart';
 import 'package:moviable/pages/auth/register_page.dart';
@@ -83,7 +86,23 @@ class _LoginPageState extends State<LoginPage> {
                 style: TextButton.styleFrom(
                   foregroundColor: Colors.white,
                 ),
-                onPressed: () {},
+                onPressed: () async {
+                  try {
+                    final email = _email.text;
+                    final password = _password.text;
+                    final credential = await FirebaseAuth.instance
+                        .signInWithEmailAndPassword(
+                            email: email, password: password);
+
+                    log(credential.toString());
+                  } on FirebaseAuthException catch (e) {
+                    if (e.code == 'user-not-found') {
+                      log('No user found for that email.');
+                    } else if (e.code == 'wrong-password') {
+                      log('Wrong password provided for that user.');
+                    }
+                  }
+                },
                 child: const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 70),
                   child: Text(
@@ -152,7 +171,8 @@ class TextFieldItem extends StatelessWidget {
     return Container(
         padding: const EdgeInsets.symmetric(horizontal: 10),
         margin: const EdgeInsets.symmetric(horizontal: 10),
-        child: TextFormField(
+        child: TextField(
+          controller: controller,
           keyboardType: keyboardType,
           enableSuggestions: false,
           obscureText: hideText,
@@ -167,7 +187,9 @@ class TextFieldItem extends StatelessWidget {
                     Icons.key,
                     color: primaryColor,
                   ),
-            label: Text(isItEmail ? 'Email' : 'Password'),
+            label: Text(
+              isItEmail ? 'Email' : 'Password',
+            ),
             labelStyle: TextStyle(color: Colors.white.withOpacity(0.6)),
             focusedBorder: OutlineInputBorder(
               borderSide: BorderSide(

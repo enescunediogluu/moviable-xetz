@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -58,29 +60,54 @@ class _SearchPageState extends State<SearchPage> {
                       });
                     },
                     cursorColor: Colors.amber,
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(
-                        Icons.search,
-                        color: Colors.white.withOpacity(0.9),
-                      ),
-                      hintText: 'Search for movies or series',
-                      hintStyle:
-                          TextStyle(color: Colors.white.withOpacity(0.4)),
-                      enabledBorder: InputBorder.none,
-                      focusedBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(color: Colors.amber),
-                          borderRadius: BorderRadius.circular(10)),
-                      errorBorder: InputBorder.none,
-                    ),
+                    decoration: SearchBarDecoration(),
                   ),
                 ),
               ],
             ),
           ),
+          searchText.isEmpty
+              ? Opacity(
+                  opacity: 0.4,
+                  child: Column(
+                    children: [
+                      const SizedBox(
+                        height: 150,
+                      ),
+                      Image.asset(
+                        'assets/no_result.png',
+                        height: 150,
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      const Text('There is no result yet ! ')
+                    ],
+                  ),
+                )
+              : Container(),
           MovieSearchResults(results: movieSearchResults),
           SeriesSearchResults(results: serieSearchResults)
         ],
       ),
+    );
+  }
+
+  InputDecoration SearchBarDecoration() {
+    return InputDecoration(
+      prefixIcon: Icon(
+        Icons.search,
+        color: Colors.white.withOpacity(0.9),
+      ),
+      hintText: 'Search for movies or series',
+      hintStyle: TextStyle(color: Colors.white.withOpacity(0.4)),
+      enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.white.withOpacity(0.7)),
+          borderRadius: BorderRadius.circular(10)),
+      focusedBorder: OutlineInputBorder(
+          borderSide: const BorderSide(color: Colors.amber),
+          borderRadius: BorderRadius.circular(10)),
+      errorBorder: InputBorder.none,
     );
   }
 }

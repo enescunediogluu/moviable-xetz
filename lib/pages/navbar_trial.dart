@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:moviable/pages/main/main_page.dart';
+import 'package:moviable/pages/main/profile_page.dart';
 import 'package:moviable/pages/main/search_page.dart';
 
 class NavbarTrial extends StatefulWidget {
@@ -12,7 +13,11 @@ class NavbarTrial extends StatefulWidget {
 class _NavbarTrialState extends State<NavbarTrial> {
   int selectedIndex = 0;
 
-  List<Widget> pages = [const HomePage(), const SearchPage()];
+  List<Widget> pages = [
+    const HomePage(),
+    const SearchPage(),
+    const ProfilePage(),
+  ];
 
   void onItemTapped(int index) {
     setState(() {
@@ -47,6 +52,8 @@ class _NavbarTrialState extends State<NavbarTrial> {
                 icon: Icon(Icons.search),
                 label: 'Search',
               ),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.person), label: 'Profile')
             ],
           ),
         ));
