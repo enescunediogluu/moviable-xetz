@@ -4,9 +4,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:moviable/firebase_options.dart';
+import 'package:moviable/pages/auth/login_page.dart';
 import 'package:moviable/pages/auth/verify_email_page.dart';
 
-import 'package:moviable/pages/main/search_page.dart';
 import 'package:moviable/pages/navbar_trial.dart';
 
 void main() async {
@@ -46,7 +46,7 @@ class AuthChecker extends StatelessWidget {
           if (user == null) {
             log('there is no user');
             // User is not authenticated, show LoginPage
-            return const SearchPage();
+            return const LoginPage();
           } else {
             log(user.emailVerified.toString());
             if (user.emailVerified == true) {

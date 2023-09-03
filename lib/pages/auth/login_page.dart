@@ -54,6 +54,8 @@ class _LoginPageState extends State<LoginPage> {
           hideText: false,
           keyboardType: TextInputType.emailAddress,
           isItEmail: true,
+          label: 'Email',
+          prefixIcon: const Icon(Icons.lock),
         ),
         const SizedBox(
           height: 10,
@@ -62,6 +64,8 @@ class _LoginPageState extends State<LoginPage> {
           controller: _password,
           hideText: false,
           isItEmail: false,
+          prefixIcon: const Icon(Icons.key),
+          label: 'Password',
         ),
         const SizedBox(
           height: 50,
@@ -158,12 +162,16 @@ class TextFieldItem extends StatelessWidget {
   final bool hideText;
   final TextInputType? keyboardType;
   final bool isItEmail;
+  final String label;
+  final Widget prefixIcon;
 
   const TextFieldItem(
       {super.key,
       required this.controller,
       required this.hideText,
       required this.isItEmail,
+      required this.label,
+      required this.prefixIcon,
       this.keyboardType});
 
   @override
@@ -178,18 +186,8 @@ class TextFieldItem extends StatelessWidget {
           obscureText: hideText,
           cursorColor: Colors.amber,
           decoration: InputDecoration(
-            prefixIcon: isItEmail
-                ? const Icon(
-                    Icons.lock,
-                    color: primaryColor,
-                  )
-                : const Icon(
-                    Icons.key,
-                    color: primaryColor,
-                  ),
-            label: Text(
-              isItEmail ? 'Email' : 'Password',
-            ),
+            prefixIcon: prefixIcon,
+            label: Text(label),
             labelStyle: TextStyle(color: Colors.white.withOpacity(0.6)),
             focusedBorder: OutlineInputBorder(
               borderSide: BorderSide(

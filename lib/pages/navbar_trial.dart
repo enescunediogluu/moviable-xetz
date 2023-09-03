@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:moviable/pages/main/lists_page.dart';
 import 'package:moviable/pages/main/main_page.dart';
 import 'package:moviable/pages/main/profile_page.dart';
 import 'package:moviable/pages/main/search_page.dart';
@@ -16,6 +17,7 @@ class _NavbarTrialState extends State<NavbarTrial> {
   List<Widget> pages = [
     const HomePage(),
     const SearchPage(),
+    const ListsPage(),
     const ProfilePage(),
   ];
 
@@ -45,15 +47,25 @@ class _NavbarTrialState extends State<NavbarTrial> {
             onTap: onItemTapped,
             items: const <BottomNavigationBarItem>[
               BottomNavigationBarItem(
+                backgroundColor: Colors.black,
                 icon: Icon(Icons.home),
                 label: 'Home',
               ),
               BottomNavigationBarItem(
+                backgroundColor: Colors.black,
                 icon: Icon(Icons.search),
                 label: 'Search',
               ),
               BottomNavigationBarItem(
-                  icon: Icon(Icons.person), label: 'Profile')
+                backgroundColor: Colors.black,
+                icon: Icon(Icons.list),
+                label: 'Lists',
+              ),
+              BottomNavigationBarItem(
+                backgroundColor: Colors.black,
+                icon: Icon(Icons.person),
+                label: 'Profile',
+              )
             ],
           ),
         ));
