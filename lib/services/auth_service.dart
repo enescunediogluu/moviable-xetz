@@ -48,7 +48,7 @@ class AuthService {
     String profilePic,
   ) async {
     try {
-      User user = (await firebaseAuth.createUserWithEmailAndPassword(
+      (await firebaseAuth.createUserWithEmailAndPassword(
               email: email, password: password))
           .user!;
 

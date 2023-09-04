@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:moviable/firebase_options.dart';
 import 'package:moviable/pages/auth/login_page.dart';
 import 'package:moviable/pages/auth/verify_email_page.dart';
+import 'package:moviable/pages/main/lists_page.dart';
 
 import 'package:moviable/pages/navbar_trial.dart';
 

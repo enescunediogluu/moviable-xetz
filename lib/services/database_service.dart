@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -73,6 +74,82 @@ class DatabaseService {
       return profilePicvalue;
     } else {
       return '';
+    }
+  }
+
+  Future addItToTheFavourites(
+    String name,
+    int movieId,
+    String description,
+    String bannerUrl,
+    String posterUrl,
+    String vote,
+    String launchOn,
+  ) async {
+    DocumentReference docRef = userCollection.doc(uid);
+    final flag = await checkIfMovieExists(movieId);
+    if (flag == false) {
+      await docRef.update({
+        "favourites": FieldValue.arrayUnion([
+          {
+            'name': name,
+            'id': movieId,
+            'description': description,
+            'bannerUrl': bannerUrl,
+            'posterUrl': posterUrl,
+            'vote': vote,
+            'launchOn': launchOn
+          }
+        ])
+      });
+    } else {
+      log('You already have it on your list!');
+    }
+  }
+
+  //chat gpt made it
+  Future<bool> checkIfMovieExists(int movieId) async {
+    try {
+      // Reference to the user's document in Firestore (replace 'uid' with the actual user ID).
+      DocumentReference docRef = userCollection.doc(uid);
+
+      // Fetch the user's document data.
+      DocumentSnapshot snapshot = await docRef.get();
+
+      if (snapshot.exists) {
+        // The user document exists.
+
+        // Cast the data to a Map<String, dynamic>.
+        Map<String, dynamic>? userData =
+            snapshot.data() as Map<String, dynamic>?;
+
+        // Check if 'favourites' field is present and not null.
+        if (userData != null && userData['favourites'] != null) {
+          List<dynamic> favorites = userData['favourites'];
+
+          // Use any() to check if any movie in the favorites list has the same 'id'.
+          bool movieExists = favorites.any((movie) => movie['id'] == movieId);
+
+          return movieExists;
+        }
+      }
+
+      // The user document does not exist or 'favourites' field is null.
+      return false;
+    } catch (e) {
+      // Handle any errors that occur during the Firestore query.
+      log("Error checking if movie exists: $e");
+      return false;
+    }
+  }
+
+  Future<List> getFavourites() async {
+    DocumentSnapshot doc = await userCollection.doc(uid).get();
+    if (doc.exists) {
+      List favourites = doc.get('favourites');
+      return favourites;
+    } else {
+      return [];
     }
   }
 }

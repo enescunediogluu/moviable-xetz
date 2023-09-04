@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:moviable/services/database_service.dart';
 import 'package:moviable/utils/text.dart';
 import 'package:moviable/widgets/description_widgets/casts.dart';
 import 'package:moviable/widgets/description_widgets/similar_movies.dart';
@@ -30,7 +33,7 @@ class _DescriptionState extends State<Description> {
   final String apiKey = '0377ce78971549737544ab0b8ca86215';
   final String readAccessToken =
       'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwMzc3Y2U3ODk3MTU0OTczNzU0NGFiMGI4Y2E4NjIxNSIsInN1YiI6IjY0ZDM1YWZmZGI0ZWQ2MDBjNTVlZTA3MiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.SE2FX61KSu47_zrqh4nedX-ORxZkpLSB2C0EfV37mQI';
-
+  final DatabaseService database = DatabaseService();
   @override
   void initState() {
     loadMovies();
@@ -143,6 +146,25 @@ class _DescriptionState extends State<Description> {
               size: 16,
             ),
           ),
+          const SizedBox(
+            height: 10,
+          ),
+          IconButton(
+              onPressed: () async {
+                await database.addItToTheFavourites(
+                    widget.name,
+                    widget.id,
+                    widget.description,
+                    widget.bannerUrl,
+                    widget.posterUrl,
+                    widget.vote,
+                    widget.launchOn);
+                log(widget.id.toString());
+              },
+              icon: const Icon(
+                Icons.favorite_outline,
+                color: Colors.amber,
+              )),
           CastList(castList: casts),
           SimilarMovies(similar: similar),
         ],

@@ -19,7 +19,7 @@ class NotReleasedMovies extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const ModifiedText(
-            text: 'Coming Soon!',
+            text: 'On Theatres!',
             color: Colors.white,
             size: 23,
           ),
