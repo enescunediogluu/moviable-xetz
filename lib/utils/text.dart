@@ -18,7 +18,7 @@ class ModifiedText extends StatelessWidget {
     return AutoSizeText(
       text,
       textAlign: TextAlign.center,
-      style: GoogleFonts.breeSerif(
+      style: GoogleFonts.poppins(
         color: color,
         fontSize: size,
       ),
@@ -43,7 +43,7 @@ class HeaderText extends StatelessWidget {
     return Text(
       text,
       textAlign: TextAlign.start,
-      style: GoogleFonts.breeSerif(
+      style: GoogleFonts.poppins(
         color: color,
         fontSize: size,
       ),

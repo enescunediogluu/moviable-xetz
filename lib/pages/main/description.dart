@@ -30,6 +30,7 @@ class _DescriptionState extends State<Description> {
   List casts = [];
   List similar = [];
   List genres = [];
+  bool isItInFavorites = false;
   final String apiKey = '0377ce78971549737544ab0b8ca86215';
   final String readAccessToken =
       'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwMzc3Y2U3ODk3MTU0OTczNzU0NGFiMGI4Y2E4NjIxNSIsInN1YiI6IjY0ZDM1YWZmZGI0ZWQ2MDBjNTVlZTA3MiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.SE2FX61KSu47_zrqh4nedX-ORxZkpLSB2C0EfV37mQI';
@@ -37,6 +38,7 @@ class _DescriptionState extends State<Description> {
   @override
   void initState() {
     loadMovies();
+    isItLiked();
     super.initState();
   }
 
@@ -50,6 +52,13 @@ class _DescriptionState extends State<Description> {
     setState(() {
       casts = credits["cast"];
       similar = similarResults["results"];
+    });
+  }
+
+  isItLiked() async {
+    final value = await database.checkIfAlreadyLiked(widget.id);
+    setState(() {
+      isItInFavorites = value;
     });
   }
 
@@ -151,7 +160,7 @@ class _DescriptionState extends State<Description> {
           ),
           IconButton(
               onPressed: () async {
-                await database.addItToTheFavourites(
+                await database.addOrDeleteFavorites(
                     widget.name,
                     widget.id,
                     widget.description,
@@ -160,11 +169,19 @@ class _DescriptionState extends State<Description> {
                     widget.vote,
                     widget.launchOn);
                 log(widget.id.toString());
+                setState(() {
+                  isItInFavorites = !isItInFavorites;
+                });
               },
-              icon: const Icon(
-                Icons.favorite_outline,
-                color: Colors.amber,
-              )),
+              icon: isItInFavorites
+                  ? const Icon(
+                      Icons.favorite,
+                      color: Colors.amber,
+                    )
+                  : const Icon(
+                      Icons.favorite_outline,
+                      color: Colors.amber,
+                    )),
           CastList(castList: casts),
           SimilarMovies(similar: similar),
         ],

@@ -77,7 +77,8 @@ class DatabaseService {
     }
   }
 
-  Future addItToTheFavourites(
+  //add it to the favorites
+  Future<void> addOrDeleteFavorites(
     String name,
     int movieId,
     String description,
@@ -87,10 +88,10 @@ class DatabaseService {
     String launchOn,
   ) async {
     DocumentReference docRef = userCollection.doc(uid);
-    final flag = await checkIfMovieExists(movieId);
+    final flag = await checkIfAlreadyLiked(movieId);
     if (flag == false) {
       await docRef.update({
-        "favourites": FieldValue.arrayUnion([
+        "favorites": FieldValue.arrayUnion([
           {
             'name': name,
             'id': movieId,
@@ -103,51 +104,63 @@ class DatabaseService {
         ])
       });
     } else {
-      log('You already have it on your list!');
+      await removeFromFavorites(movieId);
     }
   }
 
-  //chat gpt made it
-  Future<bool> checkIfMovieExists(int movieId) async {
+  // the checking the movie is already exists in db
+  Future<bool> checkIfAlreadyLiked(int movieId) async {
     try {
-      // Reference to the user's document in Firestore (replace 'uid' with the actual user ID).
       DocumentReference docRef = userCollection.doc(uid);
-
-      // Fetch the user's document data.
       DocumentSnapshot snapshot = await docRef.get();
 
       if (snapshot.exists) {
-        // The user document exists.
-
-        // Cast the data to a Map<String, dynamic>.
         Map<String, dynamic>? userData =
             snapshot.data() as Map<String, dynamic>?;
 
-        // Check if 'favourites' field is present and not null.
-        if (userData != null && userData['favourites'] != null) {
-          List<dynamic> favorites = userData['favourites'];
+        if (userData != null && userData['favorites'] != null) {
+          List<dynamic> favorites = userData['favorites'];
 
-          // Use any() to check if any movie in the favorites list has the same 'id'.
           bool movieExists = favorites.any((movie) => movie['id'] == movieId);
 
           return movieExists;
         }
       }
-
-      // The user document does not exist or 'favourites' field is null.
       return false;
     } catch (e) {
-      // Handle any errors that occur during the Firestore query.
       log("Error checking if movie exists: $e");
       return false;
     }
   }
 
-  Future<List> getFavourites() async {
+  //handling the process of removing a member of favorites
+  Future removeFromFavorites(int id) async {
+    DocumentReference docRef = userCollection.doc(uid);
+    DocumentSnapshot snapshot = await userCollection.doc(uid).get();
+    try {
+      if (snapshot.exists) {
+        if (snapshot['favorites'] != null) {
+          List<dynamic> favorites = snapshot['favorites'];
+          List<dynamic> updatedFavorites = [];
+          for (var favorite in favorites) {
+            if (favorite['id'] != id) {
+              updatedFavorites.add(favorite);
+            }
+          }
+          await docRef.update({'favorites': updatedFavorites});
+        }
+      }
+    } catch (e) {
+      log('error deleting favorite');
+    }
+  }
+
+  //getting the data of favorites
+  Future<List> getFavorites() async {
     DocumentSnapshot doc = await userCollection.doc(uid).get();
     if (doc.exists) {
-      List favourites = doc.get('favourites');
-      return favourites;
+      List favorites = doc.get('favorites');
+      return favorites;
     } else {
       return [];
     }

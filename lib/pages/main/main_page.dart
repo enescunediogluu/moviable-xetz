@@ -84,22 +84,21 @@ class TitleWidget extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        SizedBox(
-          height: 40,
-          child: Image.asset(
-            "assets/moviable_icon.png",
-            color: Colors.amber.withOpacity(0.9),
-          ),
-        ),
+        const SizedBox(
+            height: 40,
+            child: Icon(
+              Icons.movie,
+              color: Colors.amber,
+              size: 30,
+            )),
         const SizedBox(
           width: 10,
         ),
         Text(
           'moviable',
-          style: GoogleFonts.titilliumWeb(
+          style: GoogleFonts.poppins(
             color: Colors.white,
-            fontSize: 50,
-            fontWeight: FontWeight.w500,
+            fontSize: 40,
           ),
         ),
       ],

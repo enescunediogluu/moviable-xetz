@@ -36,7 +36,7 @@ class _NavbarTrialState extends State<NavbarTrial> {
           decoration: BoxDecoration(
             border: Border(
                 top: BorderSide(
-              color: Colors.amber.withOpacity(0.3),
+              color: Colors.amber.withOpacity(0.1),
               width: 1,
             )),
           ),

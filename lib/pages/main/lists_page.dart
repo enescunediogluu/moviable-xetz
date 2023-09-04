@@ -5,7 +5,6 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:moviable/services/database_service.dart';
 import 'package:moviable/utils/text.dart';
-import 'package:tmdb_api/tmdb_api.dart';
 
 class ListsPage extends StatefulWidget {
   const ListsPage({super.key});
@@ -20,7 +19,7 @@ class _ListsPageState extends State<ListsPage> {
   List favorites = [];
 
   getFavouritesFromFirebase() async {
-    final favouritesList = await database.getFavourites();
+    final favouritesList = await database.getFavorites();
     setState(() {
       favorites = favouritesList;
     });
@@ -44,13 +43,13 @@ class _ListsPageState extends State<ListsPage> {
               const SizedBox(
                 height: 80,
               ),
-              Row(
+              const Row(
                 children: [
                   Icon(Icons.favorite_border),
                   SizedBox(
                     width: 10,
                   ),
-                  const ModifiedText(
+                  ModifiedText(
                     text: 'Favourites',
                     color: Colors.white,
                     size: 25,
@@ -96,26 +95,37 @@ class _ListsPageState extends State<ListsPage> {
                           final String posterPath = movieDetails['posterUrl'];
                           // Replace with the actual key for the poster path
 
-                          return Container(
-                            width: 150, // Set the width as per your design
-                            margin: const EdgeInsets.all(8),
-                            child: Column(
-                              children: [
-                                Container(
-                                  height: 230,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(15),
-                                      image: DecorationImage(
-                                          image: NetworkImage(
-                                              'https://image.tmdb.org/t/p/w500/$posterPath'),
-                                          fit: BoxFit.cover)),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  title,
-                                  style: const TextStyle(color: Colors.white),
-                                ),
-                              ],
+                          return GestureDetector(
+                            onLongPress: () async {
+                              log(movieDetails['id'].toString());
+                              await database
+                                  .removeFromFavorites(movieDetails['id']);
+
+                              setState(() {
+                                getFavouritesFromFirebase();
+                              });
+                            },
+                            child: Container(
+                              width: 150, // Set the width as per your design
+                              margin: const EdgeInsets.all(8),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    height: 230,
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(15),
+                                        image: DecorationImage(
+                                            image: NetworkImage(
+                                                'https://image.tmdb.org/t/p/w500/$posterPath'),
+                                            fit: BoxFit.cover)),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    title,
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
+                                ],
+                              ),
                             ),
                           );
                         },
