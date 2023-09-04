@@ -29,6 +29,7 @@ class NotReleasedMovies extends StatelessWidget {
           SizedBox(
             height: 270,
             child: ListView.builder(
+              physics: const ScrollPhysics(parent: BouncingScrollPhysics()),
               itemCount: notReleased.length,
               scrollDirection: Axis.horizontal,
               itemBuilder: (context, index) {

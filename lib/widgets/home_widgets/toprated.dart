@@ -27,6 +27,8 @@ class TopRated extends StatelessWidget {
               ? SizedBox(
                   height: 270,
                   child: ListView.builder(
+                    physics:
+                        const ScrollPhysics(parent: BouncingScrollPhysics()),
                     itemCount: topRated.length,
                     scrollDirection: Axis.horizontal,
                     itemBuilder: (context, index) {

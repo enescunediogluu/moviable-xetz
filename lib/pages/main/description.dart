@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:moviable/services/database_service.dart';
 import 'package:moviable/utils/text.dart';
@@ -31,6 +29,7 @@ class _DescriptionState extends State<Description> {
   List similar = [];
   List genres = [];
   bool isItInFavorites = false;
+  bool isItInWatchList = false;
   final String apiKey = '0377ce78971549737544ab0b8ca86215';
   final String readAccessToken =
       'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwMzc3Y2U3ODk3MTU0OTczNzU0NGFiMGI4Y2E4NjIxNSIsInN1YiI6IjY0ZDM1YWZmZGI0ZWQ2MDBjNTVlZTA3MiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.SE2FX61KSu47_zrqh4nedX-ORxZkpLSB2C0EfV37mQI';
@@ -158,30 +157,89 @@ class _DescriptionState extends State<Description> {
           const SizedBox(
             height: 10,
           ),
-          IconButton(
-              onPressed: () async {
-                await database.addOrDeleteFavorites(
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              IconButton(
+                  onPressed: () async {
+                    await database.addOrDeleteFavorites(
+                        widget.name,
+                        widget.id,
+                        widget.description,
+                        widget.bannerUrl,
+                        widget.posterUrl,
+                        widget.vote,
+                        widget.launchOn);
+
+                    setState(() {
+                      isItInFavorites = !isItInFavorites;
+                    });
+                  },
+                  icon: isItInFavorites
+                      ? const Icon(
+                          Icons.favorite,
+                          color: Colors.amber,
+                        )
+                      : const Icon(
+                          Icons.favorite_outline,
+                          color: Colors.amber,
+                        )),
+              InkWell(
+                onTap: () async {
+                  await database.addOrDeleteWatchListItems(
                     widget.name,
                     widget.id,
                     widget.description,
                     widget.bannerUrl,
                     widget.posterUrl,
                     widget.vote,
-                    widget.launchOn);
-                log(widget.id.toString());
-                setState(() {
-                  isItInFavorites = !isItInFavorites;
-                });
-              },
-              icon: isItInFavorites
-                  ? const Icon(
-                      Icons.favorite,
-                      color: Colors.amber,
-                    )
-                  : const Icon(
-                      Icons.favorite_outline,
-                      color: Colors.amber,
-                    )),
+                    widget.launchOn,
+                  );
+
+                  setState(() {
+                    isItInWatchList = !isItInWatchList;
+                  });
+                },
+                child: Container(
+                  width: 170,
+                  decoration: BoxDecoration(
+                      color: isItInWatchList
+                          ? Colors.amber
+                          : const Color(0xffCDF0EA),
+                      borderRadius: BorderRadius.circular(10)),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+                  child: Row(
+                    children: [
+                      isItInWatchList
+                          ? const Icon(
+                              Icons.done,
+                              color: Colors.black,
+                            )
+                          : const Icon(
+                              Icons.timer,
+                              color: Colors.black,
+                            ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      isItInWatchList
+                          ? const ModifiedText(
+                              color: Colors.black,
+                              size: 16,
+                              text: 'on WatchList',
+                            )
+                          : const ModifiedText(
+                              color: Colors.black,
+                              size: 16,
+                              text: 'Watch Later',
+                            )
+                    ],
+                  ),
+                ),
+              )
+            ],
+          ),
           CastList(castList: casts),
           SimilarMovies(similar: similar),
         ],

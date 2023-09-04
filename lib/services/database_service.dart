@@ -165,4 +165,90 @@ class DatabaseService {
       return [];
     }
   }
+
+  Future<void> addOrDeleteWatchListItems(
+    String name,
+    int movieId,
+    String description,
+    String bannerUrl,
+    String posterUrl,
+    String vote,
+    String launchOn,
+  ) async {
+    DocumentReference docRef = userCollection.doc(uid);
+    final flag = await checkIfAlreadyOnWatchList(movieId);
+    if (flag == false) {
+      await docRef.update({
+        "watchLater": FieldValue.arrayUnion([
+          {
+            'name': name,
+            'id': movieId,
+            'description': description,
+            'bannerUrl': bannerUrl,
+            'posterUrl': posterUrl,
+            'vote': vote,
+            'launchOn': launchOn
+          }
+        ])
+      });
+    } else {
+      await removeFromWatchList(movieId);
+    }
+  }
+
+  Future<bool> checkIfAlreadyOnWatchList(int movieId) async {
+    try {
+      DocumentReference docRef = userCollection.doc(uid);
+      DocumentSnapshot snapshot = await docRef.get();
+
+      if (snapshot.exists) {
+        Map<String, dynamic>? userData =
+            snapshot.data() as Map<String, dynamic>?;
+
+        if (userData != null && userData['watchLater'] != null) {
+          List<dynamic> watchList = userData['watchLater'];
+
+          bool alreadyOnWatchList =
+              watchList.any((movie) => movie['id'] == movieId);
+
+          return alreadyOnWatchList;
+        }
+      }
+      return false;
+    } catch (e) {
+      log("Error checking if movie exists: $e");
+      return false;
+    }
+  }
+
+  Future removeFromWatchList(int id) async {
+    DocumentReference docRef = userCollection.doc(uid);
+    DocumentSnapshot snapshot = await userCollection.doc(uid).get();
+    try {
+      if (snapshot.exists) {
+        if (snapshot['watchLater'] != null) {
+          List<dynamic> watchList = snapshot['watchLater'];
+          List<dynamic> updatedWatchList = [];
+          for (var favorite in watchList) {
+            if (favorite['id'] != id) {
+              updatedWatchList.add(favorite);
+            }
+          }
+          await docRef.update({'watchLater': updatedWatchList});
+        }
+      }
+    } catch (e) {
+      log('error deleting favorite');
+    }
+  }
+
+  Future<List> getWatchList() async {
+    DocumentSnapshot doc = await userCollection.doc(uid).get();
+    if (doc.exists) {
+      List watchList = doc.get('watchLater');
+      return watchList;
+    } else {
+      return [];
+    }
+  }
 }

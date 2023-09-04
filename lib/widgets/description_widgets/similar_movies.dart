@@ -27,6 +27,8 @@ class SimilarMovies extends StatelessWidget {
                 SizedBox(
                   height: 270,
                   child: ListView.builder(
+                    physics:
+                        const ScrollPhysics(parent: BouncingScrollPhysics()),
                     itemCount: similar.length,
                     scrollDirection: Axis.horizontal,
                     itemBuilder: (context, index) {

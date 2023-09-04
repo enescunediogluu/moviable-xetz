@@ -28,6 +28,8 @@ class SeriesSearchResults extends StatelessWidget {
                 SizedBox(
                   height: 270,
                   child: ListView.builder(
+                    physics:
+                        const ScrollPhysics(parent: BouncingScrollPhysics()),
                     itemCount: results.length,
                     scrollDirection: Axis.horizontal,
                     itemBuilder: (context, index) {

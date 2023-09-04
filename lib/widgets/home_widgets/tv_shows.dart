@@ -26,6 +26,7 @@ class TvShows extends StatelessWidget {
           SizedBox(
             height: 220,
             child: ListView.builder(
+              physics: const ScrollPhysics(parent: BouncingScrollPhysics()),
               itemCount: tvShows.length,
               scrollDirection: Axis.horizontal,
               itemBuilder: (context, index) {

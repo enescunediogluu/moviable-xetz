@@ -60,6 +60,7 @@ class _HomePageState extends State<HomePage> {
           elevation: 0,
           title: const TitleWidget()),
       body: ListView(
+        physics: const ScrollPhysics(parent: BouncingScrollPhysics()),
         children: [
           const SizedBox(
             height: 20,
