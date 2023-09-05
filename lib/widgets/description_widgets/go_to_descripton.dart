@@ -24,6 +24,7 @@ void goToDescription(context, List<dynamic> list, index) {
           ? list[index]['release_date']
           : list[index]['first_air_date'],
       id: list[index]['id'],
+      isItMovie: (list[index]['title'] != null),
     ),
   ));
 

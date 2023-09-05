@@ -77,7 +77,7 @@ class SimilarMovies extends StatelessWidget {
                                 ModifiedText(
                                   text: (similar[index]['title'] != null)
                                       ? similar[index]['title']
-                                      : 'Loading',
+                                      : similar[index]['name'],
                                   color: Colors.white,
                                   size: 15,
                                 )

@@ -8,6 +8,7 @@ import 'package:tmdb_api/tmdb_api.dart';
 class Description extends StatefulWidget {
   final String name, description, bannerUrl, posterUrl, vote, launchOn;
   final int id;
+  final bool isItMovie;
 
   const Description({
     super.key,
@@ -18,6 +19,7 @@ class Description extends StatefulWidget {
     required this.vote,
     required this.launchOn,
     required this.id,
+    required this.isItMovie,
   });
 
   @override
@@ -44,13 +46,19 @@ class _DescriptionState extends State<Description> {
   loadMovies() async {
     TMDB tmdbWithCustomLogs = TMDB(ApiKeys(apiKey, readAccessToken),
         logConfig: const ConfigLogger(showLogs: true, showErrorLogs: true));
-    Map credits = await tmdbWithCustomLogs.v3.movies.getCredits(widget.id);
-    Map similarResults =
+    Map movieCredits = await tmdbWithCustomLogs.v3.movies.getCredits(widget.id);
+    Map tvCredits = await tmdbWithCustomLogs.v3.tv.getCredits(widget.id);
+    Map similarResultsMovies =
         await tmdbWithCustomLogs.v3.movies.getRecommended(widget.id);
 
+    Map similarResultsTv =
+        await tmdbWithCustomLogs.v3.tv.getRecommendations(widget.id);
+
     setState(() {
-      casts = credits["cast"];
-      similar = similarResults["results"];
+      casts = widget.isItMovie ? movieCredits["cast"] : tvCredits["cast"];
+      similar = widget.isItMovie
+          ? similarResultsMovies["results"]
+          : similarResultsTv["results"];
     });
   }
 
