@@ -16,6 +16,9 @@ class DatabaseService {
   final CollectionReference userCollection =
       FirebaseFirestore.instance.collection("users");
 
+  final CollectionReference listsCollection =
+      FirebaseFirestore.instance.collection("lists");
+
   //when registered, it saves the user data
   Future savingUserData(
     String username,
@@ -166,6 +169,7 @@ class DatabaseService {
     }
   }
 
+  // add it to the watch later
   Future<void> addOrDeleteWatchListItems(
     String name,
     int movieId,
@@ -196,6 +200,7 @@ class DatabaseService {
     }
   }
 
+  //checking if the movie already in watch list
   Future<bool> checkIfAlreadyOnWatchList(int movieId) async {
     try {
       DocumentReference docRef = userCollection.doc(uid);
@@ -221,6 +226,7 @@ class DatabaseService {
     }
   }
 
+  //handling the process of removing a member from watch list
   Future removeFromWatchList(int id) async {
     DocumentReference docRef = userCollection.doc(uid);
     DocumentSnapshot snapshot = await userCollection.doc(uid).get();
@@ -242,6 +248,7 @@ class DatabaseService {
     }
   }
 
+  // handling the process of gettin the data from firebase
   Future<List> getWatchList() async {
     DocumentSnapshot doc = await userCollection.doc(uid).get();
     if (doc.exists) {
@@ -250,5 +257,25 @@ class DatabaseService {
     } else {
       return [];
     }
+  }
+
+  //creating custom lists
+  Future createList(String username, String listName) async {
+    DocumentReference docRef = await listsCollection.add({
+      "adminId": uid,
+      "listName": listName,
+      "listIcon": "",
+      "listId": "",
+      "content": [],
+      "followers": [],
+    });
+
+    await docRef.update({
+      "listId": docRef.id,
+    });
+    DocumentReference userRef = userCollection.doc(uid);
+    await userRef.update({
+      "createdLists": FieldValue.arrayUnion([docRef.id])
+    });
   }
 }

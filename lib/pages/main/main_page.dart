@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:moviable/widgets/home_widgets/not_released_movies.dart';
@@ -45,8 +43,6 @@ class _HomePageState extends State<HomePage> {
       topRatedMovies = topRatedMoviesResults['results'];
       popularTvShows = tvShowResults['results'];
       moviesNotReleased = moviesComingSoon['results'];
-
-      log(topRatedMoviesResults.toString());
     });
   }
 

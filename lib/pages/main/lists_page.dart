@@ -1,7 +1,8 @@
-// ignore_for_file: prefer_interpolation_to_compose_strings
+// ignore_for_file: prefer_interpolation_to_compose_strings, use_build_context_synchronously
 
 import 'dart:developer';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:moviable/services/database_service.dart';
 import 'package:moviable/utils/text.dart';
@@ -18,6 +19,8 @@ class _ListsPageState extends State<ListsPage> {
 
   List favorites = [];
   List watchList = [];
+  String listName = "";
+  bool _isLoading = false;
 
   void getFavouritesFromFirebase() async {
     final favouritesList = await database.getFavorites();
@@ -43,9 +46,22 @@ class _ListsPageState extends State<ListsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.amber,
+        onPressed: () {
+          popUpDialog(context);
+        },
+        child: const Icon(
+          Icons.add,
+          color: Colors.black,
+          size: 30,
+        ),
+      ),
       backgroundColor: Colors.black,
       body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: SingleChildScrollView(
+          physics: const ScrollPhysics(parent: BouncingScrollPhysics()),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -70,7 +86,7 @@ class _ListsPageState extends State<ListsPage> {
               ),
               favorites.isEmpty
                   ? SizedBox(
-                      height: 200,
+                      height: 300,
                       child: Center(
                         child: Column(
                           children: [
@@ -92,7 +108,8 @@ class _ListsPageState extends State<ListsPage> {
                         ),
                       ),
                     )
-                  : Expanded(
+                  : SizedBox(
+                      height: 300,
                       child: ListView.builder(
                         physics: const ScrollPhysics(
                             parent: BouncingScrollPhysics()),
@@ -184,7 +201,8 @@ class _ListsPageState extends State<ListsPage> {
                         ),
                       ),
                     )
-                  : Expanded(
+                  : SizedBox(
+                      height: 300,
                       child: ListView.builder(
                         physics: const ScrollPhysics(
                             parent: BouncingScrollPhysics()),
@@ -234,8 +252,117 @@ class _ListsPageState extends State<ListsPage> {
                         },
                       ),
                     ),
+              const SizedBox(
+                height: 20,
+              ),
             ],
-          )),
+          ),
+        ),
+      ),
+    );
+  }
+
+  popUpDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              backgroundColor: Colors.black,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(25)),
+              elevation: 0,
+              title: const Text(
+                "Create a group",
+                textAlign: TextAlign.left,
+                style: TextStyle(color: Colors.white),
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _isLoading
+                      ? const Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      : TextField(
+                          onChanged: (value) {
+                            setState(() {
+                              listName = value;
+                            });
+                          },
+                          cursorColor: Theme.of(context).secondaryHeaderColor,
+                          decoration: InputDecoration(
+                            prefixIcon: Icon(
+                              Icons.add,
+                              color: Colors.white.withOpacity(0.8),
+                            ),
+                            hintText: "New Group Name",
+                            hintStyle: TextStyle(
+                              color: Colors.white.withOpacity(0.8),
+                              fontSize: 16,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide: BorderSide(
+                                color: Theme.of(context).secondaryHeaderColor,
+                              ),
+                            ),
+                            errorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide: const BorderSide(
+                                color: Colors.red,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide: BorderSide(
+                                color: Theme.of(context).primaryColor,
+                              ),
+                            ),
+                          ),
+                        ),
+                ],
+              ),
+              actions: [
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25)),
+                      elevation: 0,
+                      backgroundColor: Theme.of(context).primaryColor),
+                  child: const Text(
+                    'Cancel',
+                    style: TextStyle(color: Colors.black),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    final username = await database.getUsername();
+                    await database
+                        .createList(username, listName)
+                        .whenComplete(() => _isLoading = false);
+                    Navigator.of(context).pop();
+                  },
+                  style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25)),
+                      elevation: 0,
+                      backgroundColor: Theme.of(context).primaryColor),
+                  child: const Text(
+                    'Done',
+                    style: TextStyle(color: Colors.black),
+                  ),
+                )
+              ],
+            );
+          },
+        );
+      },
     );
   }
 }

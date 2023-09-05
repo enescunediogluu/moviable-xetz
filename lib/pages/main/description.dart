@@ -36,29 +36,38 @@ class _DescriptionState extends State<Description> {
   final String readAccessToken =
       'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwMzc3Y2U3ODk3MTU0OTczNzU0NGFiMGI4Y2E4NjIxNSIsInN1YiI6IjY0ZDM1YWZmZGI0ZWQ2MDBjNTVlZTA3MiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.SE2FX61KSu47_zrqh4nedX-ORxZkpLSB2C0EfV37mQI';
   final DatabaseService database = DatabaseService();
+
   @override
   void initState() {
-    loadMovies();
+    widget.isItMovie ? loadMovieInformations() : loadTvInformations();
     isItLiked();
     super.initState();
   }
 
-  loadMovies() async {
+  loadMovieInformations() async {
     TMDB tmdbWithCustomLogs = TMDB(ApiKeys(apiKey, readAccessToken),
         logConfig: const ConfigLogger(showLogs: true, showErrorLogs: true));
     Map movieCredits = await tmdbWithCustomLogs.v3.movies.getCredits(widget.id);
-    Map tvCredits = await tmdbWithCustomLogs.v3.tv.getCredits(widget.id);
+
     Map similarResultsMovies =
         await tmdbWithCustomLogs.v3.movies.getRecommended(widget.id);
 
+    setState(() {
+      casts = movieCredits["cast"];
+      similar = similarResultsMovies["results"];
+    });
+  }
+
+  loadTvInformations() async {
+    TMDB tmdbWithCustomLogs = TMDB(ApiKeys(apiKey, readAccessToken),
+        logConfig: const ConfigLogger(showLogs: true, showErrorLogs: true));
+    Map tvCredits = await tmdbWithCustomLogs.v3.tv.getCredits(widget.id);
     Map similarResultsTv =
         await tmdbWithCustomLogs.v3.tv.getRecommendations(widget.id);
 
     setState(() {
-      casts = widget.isItMovie ? movieCredits["cast"] : tvCredits["cast"];
-      similar = widget.isItMovie
-          ? similarResultsMovies["results"]
-          : similarResultsTv["results"];
+      casts = tvCredits["cast"];
+      similar = similarResultsTv["results"];
     });
   }
 
@@ -166,7 +175,7 @@ class _DescriptionState extends State<Description> {
             height: 10,
           ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               IconButton(
                   onPressed: () async {
