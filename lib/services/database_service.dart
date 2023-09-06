@@ -285,4 +285,20 @@ class DatabaseService {
       "createdLists": FieldValue.arrayUnion([docRef.id])
     });
   }
+
+  //gett the created lists buy user
+  Future<List> getCreatedLists() async {
+    DocumentSnapshot snapshot = await userCollection.doc(uid).get();
+    if (snapshot.exists) {
+      List createdListIds = snapshot.get('createdLists');
+      List createdLists = [];
+      for (var id in createdListIds) {
+        DocumentSnapshot movieInfo = await listsCollection.doc(id).get();
+        createdLists.add(movieInfo);
+      }
+      return createdLists;
+    } else {
+      return [];
+    }
+  }
 }

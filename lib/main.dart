@@ -5,8 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:moviable/firebase_options.dart';
 import 'package:moviable/pages/auth/login_page.dart';
 import 'package:moviable/pages/auth/verify_email_page.dart';
-import 'package:moviable/pages/extra/create_lists_page.dart';
-
+import 'package:moviable/pages/main/lists_page.dart';
 import 'package:moviable/pages/main/navbar_trial.dart';
 
 void main() async {
@@ -50,7 +49,7 @@ class AuthChecker extends StatelessWidget {
           } else {
             log(user.emailVerified.toString());
             if (user.emailVerified == true) {
-              return const NavbarTrial();
+              return const ListsPage();
             } else {
               return const VerifyEmailPage();
             }

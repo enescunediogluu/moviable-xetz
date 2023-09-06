@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_interpolation_to_compose_strings, use_build_context_synchronously
+// ignore_for_file: prefer_interpolation_to_compose_strings, use_build_context_synchronously, prefer_final_fields
 
 import 'dart:developer';
 
@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:moviable/pages/extra/create_lists_page.dart';
 import 'package:moviable/services/database_service.dart';
 import 'package:moviable/utils/text.dart';
+import 'package:moviable/widgets/lists_page_widgets/favorites_list_view.dart';
+import 'package:moviable/widgets/lists_page_widgets/watch_list_view.dart';
 
 class ListsPage extends StatefulWidget {
   const ListsPage({super.key});
@@ -17,30 +19,23 @@ class ListsPage extends StatefulWidget {
 class _ListsPageState extends State<ListsPage> {
   final DatabaseService database = DatabaseService();
 
-  List favorites = [];
-  List watchList = [];
+  List myLists = [];
   String listName = "";
   bool _isLoading = false;
 
-  void getFavouritesFromFirebase() async {
-    final favouritesList = await database.getFavorites();
+  getCreatedListsFromFirebase() async {
+    final temp = await database.getCreatedLists();
     setState(() {
-      favorites = favouritesList;
-    });
-  }
-
-  void getWatchListFromFirebase() async {
-    final watchLaterList = await database.getWatchList();
-    setState(() {
-      watchList = watchLaterList;
+      myLists = temp;
+      log(myLists.toString());
     });
   }
 
   @override
   void initState() {
     super.initState();
-    getFavouritesFromFirebase();
-    getWatchListFromFirebase();
+
+    getCreatedListsFromFirebase();
   }
 
   @override
@@ -73,107 +68,79 @@ class _ListsPageState extends State<ListsPage> {
               const SizedBox(
                 height: 80,
               ),
-              const Row(
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  Icon(Icons.favorite_border),
-                  SizedBox(
-                    width: 10,
+                  InkWell(
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => FavoritesListView(),
+                      ));
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      width: 170,
+                      height: 170,
+                      decoration: BoxDecoration(
+                          color: const Color(0xffB1B2FF),
+                          borderRadius: BorderRadius.circular(25)),
+                      child: const Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.favorite,
+                            size: 100,
+                            color: Colors.black,
+                          ),
+                          ModifiedText(
+                              text: 'Favorites', color: Colors.black, size: 18)
+                        ],
+                      ),
+                    ),
                   ),
-                  ModifiedText(
-                    text: 'Favourites',
-                    color: Colors.white,
-                    size: 25,
+                  InkWell(
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => WatchListView(),
+                      ));
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      width: 170,
+                      height: 170,
+                      decoration: BoxDecoration(
+                          color: Color(0xffFFF6BD),
+                          borderRadius: BorderRadius.circular(25)),
+                      child: const Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.watch_later,
+                            size: 100,
+                            color: Colors.black,
+                          ),
+                          ModifiedText(
+                              text: 'WatchList', color: Colors.black, size: 18)
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               ),
               const SizedBox(
-                height: 10,
+                height: 20,
               ),
-              favorites.isEmpty
-                  ? SizedBox(
-                      height: 300,
-                      child: Center(
-                        child: Column(
-                          children: [
-                            const SizedBox(
-                              height: 25,
-                            ),
-                            const Icon(
-                              Icons.heart_broken,
-                              color: Colors.amber,
-                            ),
-                            const SizedBox(
-                              height: 15,
-                            ),
-                            ModifiedText(
-                                text: 'There is nothing to show!',
-                                color: Colors.white.withOpacity(0.4),
-                                size: 15)
-                          ],
-                        ),
-                      ),
-                    )
-                  : SizedBox(
-                      height: 300,
-                      child: ListView.builder(
-                        physics: const ScrollPhysics(
-                            parent: BouncingScrollPhysics()),
-                        scrollDirection: Axis.horizontal,
-                        itemCount: favorites.length,
-                        itemBuilder: (context, index) {
-                          final movieDetails = favorites[index];
-                          final String title = movieDetails[
-                              'name']; // Replace with the actual key for movie title in the response
-                          final String posterPath = movieDetails['posterUrl'];
-                          // Replace with the actual key for the poster path
-
-                          return GestureDetector(
-                            onLongPress: () async {
-                              log(movieDetails['id'].toString());
-                              await database
-                                  .removeFromFavorites(movieDetails['id']);
-
-                              setState(() {
-                                getFavouritesFromFirebase();
-                              });
-                            },
-                            child: Container(
-                              width: 150, // Set the width as per your design
-                              margin: const EdgeInsets.all(8),
-                              child: Column(
-                                children: [
-                                  Container(
-                                    height: 230,
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(15),
-                                        image: DecorationImage(
-                                            image: NetworkImage(
-                                                'https://image.tmdb.org/t/p/w500/$posterPath'),
-                                            fit: BoxFit.cover)),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  ModifiedText(
-                                    text: title,
-                                    size: 13,
-                                    color: Colors.white,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
               const Row(
                 children: [
                   Icon(
-                    Icons.watch_later,
+                    Icons.list,
+                    color: Colors.amber,
                   ),
                   SizedBox(
                     width: 10,
                   ),
                   ModifiedText(
-                    text: 'Watch List',
+                    text: 'My Lists',
                     color: Colors.white,
                     size: 25,
                   ),
@@ -182,83 +149,37 @@ class _ListsPageState extends State<ListsPage> {
               const SizedBox(
                 height: 10,
               ),
-              watchList.isEmpty
-                  ? SizedBox(
-                      height: 200,
-                      child: Center(
-                        child: Column(
-                          children: [
-                            const SizedBox(
-                              height: 25,
-                            ),
-                            const Icon(
-                              Icons.repeat,
-                              color: Colors.amber,
-                            ),
-                            const SizedBox(
-                              height: 15,
-                            ),
-                            ModifiedText(
-                                text: 'There is nothing to show!',
-                                color: Colors.white.withOpacity(0.4),
-                                size: 15)
-                          ],
-                        ),
+              SizedBox(
+                height: 300,
+                child: ListView.builder(
+                  physics: const ScrollPhysics(parent: BouncingScrollPhysics()),
+                  scrollDirection: Axis.horizontal,
+                  itemCount: myLists.length,
+                  itemBuilder: (context, index) {
+                    final listDetails = myLists[index];
+                    final posterPath = listDetails['listIcon'];
+                    final title = listDetails['listName'];
+                    return Column(children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        width: 240,
+                        height: 180,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(25),
+                            image: DecorationImage(
+                                image: NetworkImage((posterPath != "")
+                                    ? posterPath
+                                    : 'https://pbs.twimg.com/profile_images/737023860839747584/hDWpm4OB_400x400.jpg'),
+                                fit: BoxFit.cover)),
                       ),
-                    )
-                  : SizedBox(
-                      height: 300,
-                      child: ListView.builder(
-                        physics: const ScrollPhysics(
-                            parent: BouncingScrollPhysics()),
-                        scrollDirection: Axis.horizontal,
-                        itemCount: watchList.length,
-                        itemBuilder: (context, index) {
-                          final movieDetails = watchList[index];
-                          final String title = movieDetails[
-                              'name']; // Replace with the actual key for movie title in the response
-                          final String backdropPath = movieDetails['bannerUrl'];
-                          // Replace with the actual key for the poster path
-
-                          return GestureDetector(
-                            onLongPress: () async {
-                              log(movieDetails['id'].toString());
-                              await database
-                                  .removeFromWatchList(movieDetails['id']);
-
-                              setState(() {
-                                getWatchListFromFirebase();
-                              });
-                            },
-                            child: Container(
-                              width: 230, // Set the width as per your design
-                              margin: const EdgeInsets.all(8),
-                              child: Column(
-                                children: [
-                                  Container(
-                                    height: 150,
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(15),
-                                        image: DecorationImage(
-                                            image: NetworkImage(
-                                                'https://image.tmdb.org/t/p/w500/$backdropPath'),
-                                            fit: BoxFit.cover)),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  ModifiedText(
-                                    text: title,
-                                    size: 13,
-                                    color: Colors.white,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
+                      ModifiedText(
+                        text: title,
+                        color: Colors.white,
+                        size: 13,
                       ),
-                    ),
-              const SizedBox(
-                height: 20,
+                    ]);
+                  },
+                ),
               ),
             ],
           ),
