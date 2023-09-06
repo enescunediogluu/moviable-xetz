@@ -38,7 +38,7 @@ class DatabaseService {
   }
 
   //uploading a profile picture to the user
-  Future<String> updateTheProfilePhoto() async {
+  Future<String> uploadProfilePhotoAndGetUrl() async {
     ImagePicker imagePicker = ImagePicker();
     XFile? file = await imagePicker.pickImage(source: ImageSource.gallery);
 
@@ -56,6 +56,11 @@ class DatabaseService {
     } else {
       return "";
     }
+  }
+
+  //deleting images from firebase
+  Future deleteImageFromFirebase(String url) async {
+    await FirebaseStorage.instance.refFromURL(url).delete();
   }
 
   //getting the username
@@ -260,14 +265,16 @@ class DatabaseService {
   }
 
   //creating custom lists
-  Future createList(String username, String listName) async {
+  Future createList(
+      String username, String listName, String profilePic, bool private) async {
     DocumentReference docRef = await listsCollection.add({
       "adminId": uid,
       "listName": listName,
-      "listIcon": "",
+      "listIcon": profilePic,
       "listId": "",
       "content": [],
       "followers": [],
+      "private": private
     });
 
     await docRef.update({

@@ -3,6 +3,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:moviable/pages/extra/create_lists_page.dart';
 import 'package:moviable/services/database_service.dart';
 import 'package:moviable/utils/text.dart';
 
@@ -50,7 +51,9 @@ class _ListsPageState extends State<ListsPage> {
         child: FloatingActionButton(
           backgroundColor: Colors.amber,
           onPressed: () {
-            popUpDialog(context);
+            Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => const CreateListsPage(),
+            ));
           },
           child: const Icon(
             Icons.add,
@@ -344,11 +347,9 @@ class _ListsPageState extends State<ListsPage> {
                 ),
                 ElevatedButton(
                   onPressed: () async {
-                    final username = await database.getUsername();
-                    await database
-                        .createList(username, listName)
-                        .whenComplete(() => _isLoading = false);
-                    Navigator.of(context).pop();
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const CreateListsPage(),
+                    ));
                   },
                   style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(

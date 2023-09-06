@@ -3,7 +3,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:moviable/pages/main/description.dart';
+import 'package:moviable/pages/extra/description.dart';
 
 void goToDescription(context, List<dynamic> list, index) {
   Navigator.of(context).push(MaterialPageRoute(

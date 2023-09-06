@@ -27,7 +27,7 @@ class UpdateProfilePicWidget extends StatelessWidget {
           padding: const EdgeInsets.all(8.0), // Adjust the padding as needed
           child: GestureDetector(
             onTap: () async {
-              profilePic = await database.updateTheProfilePhoto();
+              profilePic = await database.uploadProfilePhotoAndGetUrl();
             },
             child: const CircleAvatar(
               backgroundColor:
