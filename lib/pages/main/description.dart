@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:moviable/constants/keys.dart';
 import 'package:moviable/services/database_service.dart';
 import 'package:moviable/utils/text.dart';
 import 'package:moviable/widgets/description_widgets/casts.dart';
@@ -32,9 +33,7 @@ class _DescriptionState extends State<Description> {
   List genres = [];
   bool isItInFavorites = false;
   bool isItInWatchList = false;
-  final String apiKey = '0377ce78971549737544ab0b8ca86215';
-  final String readAccessToken =
-      'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwMzc3Y2U3ODk3MTU0OTczNzU0NGFiMGI4Y2E4NjIxNSIsInN1YiI6IjY0ZDM1YWZmZGI0ZWQ2MDBjNTVlZTA3MiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.SE2FX61KSu47_zrqh4nedX-ORxZkpLSB2C0EfV37mQI';
+
   final DatabaseService database = DatabaseService();
 
   @override

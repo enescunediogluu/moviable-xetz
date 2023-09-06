@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:moviable/constants/keys.dart';
 import 'package:moviable/widgets/home_widgets/not_released_movies.dart';
 import 'package:moviable/widgets/home_widgets/toprated.dart';
 import 'package:moviable/widgets/home_widgets/trending.dart';
@@ -18,9 +19,6 @@ class _HomePageState extends State<HomePage> {
   List topRatedMovies = [];
   List popularTvShows = [];
   List moviesNotReleased = [];
-  final String apiKey = '0377ce78971549737544ab0b8ca86215';
-  final String readAccessToken =
-      'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwMzc3Y2U3ODk3MTU0OTczNzU0NGFiMGI4Y2E4NjIxNSIsInN1YiI6IjY0ZDM1YWZmZGI0ZWQ2MDBjNTVlZTA3MiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.SE2FX61KSu47_zrqh4nedX-ORxZkpLSB2C0EfV37mQI';
 
   @override
   void initState() {

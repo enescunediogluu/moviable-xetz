@@ -2,7 +2,6 @@
 
 import 'dart:developer';
 
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:moviable/services/database_service.dart';
 import 'package:moviable/utils/text.dart';
@@ -46,15 +45,18 @@ class _ListsPageState extends State<ListsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.amber,
-        onPressed: () {
-          popUpDialog(context);
-        },
-        child: const Icon(
-          Icons.add,
-          color: Colors.black,
-          size: 30,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 50),
+        child: FloatingActionButton(
+          backgroundColor: Colors.amber,
+          onPressed: () {
+            popUpDialog(context);
+          },
+          child: const Icon(
+            Icons.add,
+            color: Colors.black,
+            size: 30,
+          ),
         ),
       ),
       backgroundColor: Colors.black,
