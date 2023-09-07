@@ -5,6 +5,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:moviable/constants/colors.dart';
+import 'package:moviable/utils/text.dart';
 import 'package:moviable/widgets/search_widgets/movie_search_results.dart';
 import 'package:moviable/widgets/search_widgets/series_search_results.dart';
 import 'package:tmdb_api/tmdb_api.dart';
@@ -68,21 +69,25 @@ class _SearchPageState extends State<SearchPage> {
             ),
           ),
           searchText.isEmpty
-              ? Opacity(
+              ? const Opacity(
                   opacity: 0.4,
                   child: Column(
                     children: [
-                      const SizedBox(
+                      SizedBox(
                         height: 150,
                       ),
-                      Image.asset(
-                        'assets/no_result.png',
-                        height: 150,
+                      Icon(
+                        Icons.search_off,
+                        size: 60,
                       ),
-                      const SizedBox(
+                      SizedBox(
                         height: 20,
                       ),
-                      const Text('There is no result yet ! ')
+                      ModifiedText(
+                        text: 'There is no result yet !',
+                        color: Colors.white,
+                        size: 15,
+                      )
                     ],
                   ),
                 )

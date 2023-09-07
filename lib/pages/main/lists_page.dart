@@ -87,7 +87,7 @@ class _ListsPageState extends State<ListsPage> {
                       color: secondaryColor.withOpacity(0.8),
                     ),
                     ModifiedText(
-                        text: 'Search in lists...',
+                        text: 'Search lists...',
                         color: secondaryColor.withOpacity(0.8),
                         size: 15)
                   ],

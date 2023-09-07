@@ -39,7 +39,14 @@ class _CreateListsPageState extends State<CreateListsPage> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
           onPressed: () {
-            Navigator.of(context).pop();
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(
+                builder: (context) => const NavbarTrial(
+                  definedIndex: 2, // Set the selectedIndex to 2
+                ),
+              ),
+              (route) => false, // Remove all routes from the stack
+            );
           },
         ),
         centerTitle: true,
@@ -206,11 +213,14 @@ class _CreateListsPageState extends State<CreateListsPage> {
                         username, listName, profilePic, private);
 
                     // ignore: use_build_context_synchronously
-                    Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const NavbarTrial(
-                        definedIndex: 2,
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(
+                        builder: (context) => const NavbarTrial(
+                          definedIndex: 2, // Set the selectedIndex to 2
+                        ),
                       ),
-                    ));
+                      (route) => false, // Remove all routes from the stack
+                    );
                   }
                 },
                 child: const SizedBox(
