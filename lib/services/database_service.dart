@@ -301,4 +301,32 @@ class DatabaseService {
       return [];
     }
   }
+
+  Future deleteListsFromListDocuments(String listId) async {
+    DocumentReference docRef = listsCollection.doc(listId);
+    await docRef.delete();
+  }
+
+  Future deleteListsFromCreatedLists(String listId) async {
+    DocumentReference docRef = userCollection.doc(uid);
+    DocumentSnapshot snapshot = await docRef.get();
+    await deleteListsFromListDocuments(listId);
+    try {
+      if (snapshot.exists) {
+        if (snapshot['createdLists'] != null) {
+          List<dynamic> createdListIds = snapshot['createdLists'];
+          List<dynamic> updatedListIds = [];
+          for (var id in createdListIds) {
+            if (id != listId) {
+              updatedListIds.add(id);
+            }
+          }
+
+          await docRef.update({'createdLists': updatedListIds});
+        }
+      }
+    } catch (e) {
+      log('error while trying to delete the list');
+    }
+  }
 }

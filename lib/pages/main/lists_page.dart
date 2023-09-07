@@ -21,12 +21,18 @@ class _ListsPageState extends State<ListsPage> {
   List myLists = [];
   String listName = "";
 
-  bool createdFlag = true;
-
   getCreatedListsFromFirebase() async {
     final temp = await database.getCreatedLists();
     setState(() {
       myLists = temp;
+    });
+  }
+
+  deleteLists(String listId) {
+    database.deleteListsFromCreatedLists(listId);
+    setState(() {
+      myLists.removeWhere((list) => list['listId'] == listId);
+      //try to understand this code part
     });
   }
 
@@ -184,10 +190,12 @@ class _ListsPageState extends State<ListsPage> {
                           GeneralListWidget(
                             myLists: myLists,
                             color: const Color(0xff222831),
+                            onLongPress: deleteLists,
                           ),
                           GeneralListWidget(
                             myLists: myLists,
                             color: const Color(0xff222831),
+                            onLongPress: unfollowList,
                           ),
                         ],
                       ),
@@ -203,15 +211,19 @@ class _ListsPageState extends State<ListsPage> {
   }
 }
 
+unfollowList(String id) {}
+
 class GeneralListWidget extends StatelessWidget {
   const GeneralListWidget({
     super.key,
     required this.myLists,
     required this.color,
+    required this.onLongPress,
   });
 
   final List myLists;
   final Color color;
+  final Function(String id) onLongPress;
 
   @override
   Widget build(BuildContext context) {
@@ -225,33 +237,38 @@ class GeneralListWidget extends StatelessWidget {
           final listDetails = myLists[index];
           final posterPath = listDetails['listIcon'];
           final title = listDetails['listName'];
-          return Container(
-            margin: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-                color: color, borderRadius: BorderRadius.circular(25)),
-            child: Row(children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                width: 90,
-                height: 90,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(25),
-                    image: DecorationImage(
-                        image: NetworkImage((posterPath != "")
-                            ? posterPath
-                            : 'https://pbs.twimg.com/profile_images/737023860839747584/hDWpm4OB_400x400.jpg'),
-                        fit: BoxFit.cover)),
-              ),
-              const SizedBox(
-                width: 20,
-              ),
-              ModifiedText(
-                text: title,
-                color: Colors.white,
-                size: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ]),
+          return InkWell(
+            onLongPress: () => onLongPress(listDetails['listId']),
+            child: Container(
+              margin: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                  color: color, borderRadius: BorderRadius.circular(25)),
+              child: Row(children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  width: 90,
+                  height: 90,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(25),
+                      image: DecorationImage(
+                          image: NetworkImage((posterPath != "")
+                              ? posterPath
+                              : 'https://pbs.twimg.com/profile_images/737023860839747584/hDWpm4OB_400x400.jpg'),
+                          fit: BoxFit.cover)),
+                ),
+                const SizedBox(
+                  width: 20,
+                ),
+                SizedBox(
+                  width: 200,
+                  child: HeaderText(
+                    text: title,
+                    color: Colors.white,
+                    size: 18,
+                  ),
+                ),
+              ]),
+            ),
           );
         },
       ),
