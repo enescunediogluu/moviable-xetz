@@ -5,7 +5,8 @@ import 'package:moviable/pages/main/profile_page.dart';
 import 'package:moviable/pages/main/search_page.dart';
 
 class NavbarTrial extends StatefulWidget {
-  const NavbarTrial({super.key});
+  final int definedIndex;
+  const NavbarTrial({super.key, this.definedIndex = 0});
 
   @override
   State<NavbarTrial> createState() => _NavbarTrialState();
@@ -25,6 +26,12 @@ class _NavbarTrialState extends State<NavbarTrial> {
     setState(() {
       selectedIndex = index;
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    selectedIndex = widget.definedIndex;
   }
 
   @override

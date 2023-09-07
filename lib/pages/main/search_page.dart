@@ -3,6 +3,8 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:moviable/constants/colors.dart';
 import 'package:moviable/widgets/search_widgets/movie_search_results.dart';
 import 'package:moviable/widgets/search_widgets/series_search_results.dart';
 import 'package:tmdb_api/tmdb_api.dart';
@@ -43,27 +45,26 @@ class _SearchPageState extends State<SearchPage> {
       backgroundColor: Colors.black,
       body: ListView(
         children: [
+          const SizedBox(
+            height: 10,
+          ),
           Container(
-            margin: const EdgeInsets.all(15),
-            child: Row(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                      color: Colors.grey[700],
-                      borderRadius: BorderRadius.circular(10)),
-                  width: MediaQuery.of(context).size.width * 0.92,
-                  child: TextFormField(
-                    onChanged: (value) {
-                      setState(() {
-                        searchText = value;
-                        search(searchText);
-                      });
-                    },
-                    cursorColor: Colors.amber,
-                    decoration: SearchBarDecoration(),
-                  ),
-                ),
-              ],
+            margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+                color: Colors.grey, borderRadius: BorderRadius.circular(25)),
+            height: 50,
+            child: Center(
+              child: TextFormField(
+                onChanged: (value) {
+                  setState(() {
+                    searchText = value;
+                    search(searchText);
+                  });
+                },
+                cursorColor: secondaryColor,
+                decoration: SearchBarDecoration(),
+              ),
             ),
           ),
           searchText.isEmpty
@@ -97,16 +98,12 @@ class _SearchPageState extends State<SearchPage> {
     return InputDecoration(
       prefixIcon: Icon(
         Icons.search,
-        color: Colors.white.withOpacity(0.9),
+        color: secondaryColor.withOpacity(0.8),
       ),
       hintText: 'Search for movies or series',
-      hintStyle: TextStyle(color: Colors.white.withOpacity(0.4)),
-      enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.white.withOpacity(0.7)),
-          borderRadius: BorderRadius.circular(10)),
-      focusedBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: Colors.amber),
-          borderRadius: BorderRadius.circular(10)),
+      hintStyle: GoogleFonts.poppins(fontSize: 13, color: secondaryColor),
+      enabledBorder: InputBorder.none,
+      focusedBorder: InputBorder.none,
       errorBorder: InputBorder.none,
     );
   }

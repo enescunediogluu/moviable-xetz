@@ -1,8 +1,7 @@
 // ignore_for_file: prefer_interpolation_to_compose_strings, use_build_context_synchronously, prefer_final_fields
 
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
+import 'package:moviable/constants/colors.dart';
 import 'package:moviable/pages/extra/create_lists_page.dart';
 import 'package:moviable/services/database_service.dart';
 import 'package:moviable/utils/text.dart';
@@ -21,20 +20,19 @@ class _ListsPageState extends State<ListsPage> {
 
   List myLists = [];
   String listName = "";
-  bool _isLoading = false;
+
+  bool createdFlag = true;
 
   getCreatedListsFromFirebase() async {
     final temp = await database.getCreatedLists();
     setState(() {
       myLists = temp;
-      log(myLists.toString());
     });
   }
 
   @override
   void initState() {
     super.initState();
-
     getCreatedListsFromFirebase();
   }
 
@@ -44,7 +42,7 @@ class _ListsPageState extends State<ListsPage> {
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 50),
         child: FloatingActionButton(
-          backgroundColor: Colors.amber,
+          backgroundColor: primaryColor,
           onPressed: () {
             Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => const CreateListsPage(),
@@ -52,12 +50,12 @@ class _ListsPageState extends State<ListsPage> {
           },
           child: const Icon(
             Icons.add,
-            color: Colors.black,
+            color: secondaryColor,
             size: 30,
           ),
         ),
       ),
-      backgroundColor: Colors.black,
+      backgroundColor: secondaryColor,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: SingleChildScrollView(
@@ -66,10 +64,34 @@ class _ListsPageState extends State<ListsPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(
-                height: 80,
+                height: 60,
+              ),
+              Container(
+                height: 40,
+                decoration: BoxDecoration(
+                  color: Colors.grey,
+                  borderRadius: BorderRadius.circular(25),
+                ),
+                child: Center(
+                    child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.search,
+                      color: secondaryColor.withOpacity(0.8),
+                    ),
+                    ModifiedText(
+                        text: 'Search in lists...',
+                        color: secondaryColor.withOpacity(0.8),
+                        size: 15)
+                  ],
+                )),
+              ),
+              const SizedBox(
+                height: 25,
               ),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   InkWell(
                     onTap: () {
@@ -77,15 +99,30 @@ class _ListsPageState extends State<ListsPage> {
                         builder: (context) => const FavoritesListView(),
                       ));
                     },
-                    child: Container(
-                      padding: const EdgeInsets.all(10),
-                      width: 170,
-                      height: 170,
-                      decoration: BoxDecoration(
-                          image: const DecorationImage(
-                              image: AssetImage('assets/favorites_icon.png')),
-                          borderRadius: BorderRadius.circular(25)),
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          width: 130,
+                          height: 130,
+                          decoration: BoxDecoration(
+                              image: const DecorationImage(
+                                  image:
+                                      AssetImage('assets/favorites_icon.png')),
+                              borderRadius: BorderRadius.circular(25)),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        const ModifiedText(
+                            text: 'Favorites', color: Colors.white, size: 20)
+                      ],
                     ),
+                  ),
+                  const VerticalDivider(
+                    width: 15,
+                    thickness: 3,
+                    color: primaryColor,
                   ),
                   InkWell(
                     onTap: () {
@@ -93,14 +130,24 @@ class _ListsPageState extends State<ListsPage> {
                         builder: (context) => const WatchListView(),
                       ));
                     },
-                    child: Container(
-                      padding: const EdgeInsets.all(10),
-                      width: 170,
-                      height: 170,
-                      decoration: BoxDecoration(
-                          image: const DecorationImage(
-                              image: AssetImage('assets/watch_later_icon.png')),
-                          borderRadius: BorderRadius.circular(25)),
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          width: 130,
+                          height: 130,
+                          decoration: BoxDecoration(
+                              image: const DecorationImage(
+                                  image: AssetImage(
+                                      'assets/watch_later_icon.png')),
+                              borderRadius: BorderRadius.circular(25)),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        const ModifiedText(
+                            text: 'Watch List', color: Colors.white, size: 20)
+                      ],
                     ),
                   ),
                 ],
@@ -108,70 +155,105 @@ class _ListsPageState extends State<ListsPage> {
               const SizedBox(
                 height: 40,
               ),
-              const Row(
-                children: [
-                  Icon(
-                    Icons.list,
-                    color: Colors.amber,
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  ModifiedText(
-                    text: 'Created Lists',
-                    color: Colors.white,
-                    size: 25,
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              SizedBox(
-                height: 300,
-                child: ListView.builder(
-                  physics: const ScrollPhysics(parent: BouncingScrollPhysics()),
-                  scrollDirection: Axis.vertical,
-                  itemCount: myLists.length,
-                  itemBuilder: (context, index) {
-                    final listDetails = myLists[index];
-                    final posterPath = listDetails['listIcon'];
-                    final title = listDetails['listName'];
-                    return Container(
-                      margin: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                          color: const Color(0xff404258),
-                          borderRadius: BorderRadius.circular(25)),
-                      child: Row(children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          width: 90,
-                          height: 90,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(25),
-                              image: DecorationImage(
-                                  image: NetworkImage((posterPath != "")
-                                      ? posterPath
-                                      : 'https://pbs.twimg.com/profile_images/737023860839747584/hDWpm4OB_400x400.jpg'),
-                                  fit: BoxFit.cover)),
+              DefaultTabController(
+                length: 2, // Number of tabs (Created Lists and Following Lists)
+                child: Column(
+                  children: [
+                    const TabBar(
+                      tabs: [
+                        Tab(
+                          child: ModifiedText(
+                            color: Colors.white,
+                            text: 'Your Lists',
+                            size: 15,
+                          ),
                         ),
-                        const SizedBox(
-                          width: 20,
+                        Tab(
+                          child: ModifiedText(
+                            color: Colors.white,
+                            text: 'Following',
+                            size: 15,
+                          ),
                         ),
-                        ModifiedText(
-                          text: title,
-                          color: Colors.white,
-                          size: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ]),
-                    );
-                  },
+                      ],
+                    ),
+                    SizedBox(
+                      height: 500, // Adjust the height as needed
+                      child: TabBarView(
+                        children: [
+                          GeneralListWidget(
+                            myLists: myLists,
+                            color: const Color(0xff222831),
+                          ),
+                          GeneralListWidget(
+                            myLists: myLists,
+                            color: const Color(0xff222831),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class GeneralListWidget extends StatelessWidget {
+  const GeneralListWidget({
+    super.key,
+    required this.myLists,
+    required this.color,
+  });
+
+  final List myLists;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 300,
+      child: ListView.builder(
+        physics: const ScrollPhysics(parent: BouncingScrollPhysics()),
+        scrollDirection: Axis.vertical,
+        itemCount: myLists.length,
+        itemBuilder: (context, index) {
+          final listDetails = myLists[index];
+          final posterPath = listDetails['listIcon'];
+          final title = listDetails['listName'];
+          return Container(
+            margin: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+                color: color, borderRadius: BorderRadius.circular(25)),
+            child: Row(children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                width: 90,
+                height: 90,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(25),
+                    image: DecorationImage(
+                        image: NetworkImage((posterPath != "")
+                            ? posterPath
+                            : 'https://pbs.twimg.com/profile_images/737023860839747584/hDWpm4OB_400x400.jpg'),
+                        fit: BoxFit.cover)),
+              ),
+              const SizedBox(
+                width: 20,
+              ),
+              ModifiedText(
+                text: title,
+                color: Colors.white,
+                size: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ]),
+          );
+        },
       ),
     );
   }

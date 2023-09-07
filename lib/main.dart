@@ -49,7 +49,7 @@ class AuthChecker extends StatelessWidget {
           } else {
             log(user.emailVerified.toString());
             if (user.emailVerified == true) {
-              return const ListsPage();
+              return const NavbarTrial();
             } else {
               return const VerifyEmailPage();
             }

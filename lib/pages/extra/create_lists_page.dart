@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:moviable/pages/main/navbar_trial.dart';
 import 'package:moviable/services/database_service.dart';
 import 'package:moviable/utils/text.dart';
 
@@ -205,7 +206,11 @@ class _CreateListsPageState extends State<CreateListsPage> {
                         username, listName, profilePic, private);
 
                     // ignore: use_build_context_synchronously
-                    Navigator.of(context).pop();
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const NavbarTrial(
+                        definedIndex: 2,
+                      ),
+                    ));
                   }
                 },
                 child: const SizedBox(
