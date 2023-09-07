@@ -74,7 +74,7 @@ class _ListsPageState extends State<ListsPage> {
                   InkWell(
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => FavoritesListView(),
+                        builder: (context) => const FavoritesListView(),
                       ));
                     },
                     child: Container(
@@ -82,26 +82,15 @@ class _ListsPageState extends State<ListsPage> {
                       width: 170,
                       height: 170,
                       decoration: BoxDecoration(
-                          color: const Color(0xffB1B2FF),
+                          image: const DecorationImage(
+                              image: AssetImage('assets/favorites_icon.png')),
                           borderRadius: BorderRadius.circular(25)),
-                      child: const Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.favorite,
-                            size: 100,
-                            color: Colors.black,
-                          ),
-                          ModifiedText(
-                              text: 'Favorites', color: Colors.black, size: 18)
-                        ],
-                      ),
                     ),
                   ),
                   InkWell(
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => WatchListView(),
+                        builder: (context) => const WatchListView(),
                       ));
                     },
                     child: Container(
@@ -109,26 +98,15 @@ class _ListsPageState extends State<ListsPage> {
                       width: 170,
                       height: 170,
                       decoration: BoxDecoration(
-                          color: Color(0xffFFF6BD),
+                          image: const DecorationImage(
+                              image: AssetImage('assets/watch_later_icon.png')),
                           borderRadius: BorderRadius.circular(25)),
-                      child: const Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.watch_later,
-                            size: 100,
-                            color: Colors.black,
-                          ),
-                          ModifiedText(
-                              text: 'WatchList', color: Colors.black, size: 18)
-                        ],
-                      ),
                     ),
                   ),
                 ],
               ),
               const SizedBox(
-                height: 20,
+                height: 40,
               ),
               const Row(
                 children: [
@@ -140,7 +118,7 @@ class _ListsPageState extends State<ListsPage> {
                     width: 10,
                   ),
                   ModifiedText(
-                    text: 'My Lists',
+                    text: 'Created Lists',
                     color: Colors.white,
                     size: 25,
                   ),
@@ -153,31 +131,41 @@ class _ListsPageState extends State<ListsPage> {
                 height: 300,
                 child: ListView.builder(
                   physics: const ScrollPhysics(parent: BouncingScrollPhysics()),
-                  scrollDirection: Axis.horizontal,
+                  scrollDirection: Axis.vertical,
                   itemCount: myLists.length,
                   itemBuilder: (context, index) {
                     final listDetails = myLists[index];
                     final posterPath = listDetails['listIcon'];
                     final title = listDetails['listName'];
-                    return Column(children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        width: 240,
-                        height: 180,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(25),
-                            image: DecorationImage(
-                                image: NetworkImage((posterPath != "")
-                                    ? posterPath
-                                    : 'https://pbs.twimg.com/profile_images/737023860839747584/hDWpm4OB_400x400.jpg'),
-                                fit: BoxFit.cover)),
-                      ),
-                      ModifiedText(
-                        text: title,
-                        color: Colors.white,
-                        size: 13,
-                      ),
-                    ]);
+                    return Container(
+                      margin: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                          color: const Color(0xff404258),
+                          borderRadius: BorderRadius.circular(25)),
+                      child: Row(children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          width: 90,
+                          height: 90,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(25),
+                              image: DecorationImage(
+                                  image: NetworkImage((posterPath != "")
+                                      ? posterPath
+                                      : 'https://pbs.twimg.com/profile_images/737023860839747584/hDWpm4OB_400x400.jpg'),
+                                  fit: BoxFit.cover)),
+                        ),
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        ModifiedText(
+                          text: title,
+                          color: Colors.white,
+                          size: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ]),
+                    );
                   },
                 ),
               ),
@@ -185,108 +173,6 @@ class _ListsPageState extends State<ListsPage> {
           ),
         ),
       ),
-    );
-  }
-
-  popUpDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      barrierDismissible: true,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              backgroundColor: Colors.black,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(25)),
-              elevation: 0,
-              title: const Text(
-                "Create a group",
-                textAlign: TextAlign.left,
-                style: TextStyle(color: Colors.white),
-              ),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _isLoading
-                      ? const Center(
-                          child: CircularProgressIndicator(),
-                        )
-                      : TextField(
-                          onChanged: (value) {
-                            setState(() {
-                              listName = value;
-                            });
-                          },
-                          cursorColor: Theme.of(context).secondaryHeaderColor,
-                          decoration: InputDecoration(
-                            prefixIcon: Icon(
-                              Icons.add,
-                              color: Colors.white.withOpacity(0.8),
-                            ),
-                            hintText: "New Group Name",
-                            hintStyle: TextStyle(
-                              color: Colors.white.withOpacity(0.8),
-                              fontSize: 16,
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
-                              borderSide: BorderSide(
-                                color: Theme.of(context).secondaryHeaderColor,
-                              ),
-                            ),
-                            errorBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
-                              borderSide: const BorderSide(
-                                color: Colors.red,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
-                              borderSide: BorderSide(
-                                color: Theme.of(context).primaryColor,
-                              ),
-                            ),
-                          ),
-                        ),
-                ],
-              ),
-              actions: [
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25)),
-                      elevation: 0,
-                      backgroundColor: Theme.of(context).primaryColor),
-                  child: const Text(
-                    'Cancel',
-                    style: TextStyle(color: Colors.black),
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () async {
-                    Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const CreateListsPage(),
-                    ));
-                  },
-                  style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25)),
-                      elevation: 0,
-                      backgroundColor: Theme.of(context).primaryColor),
-                  child: const Text(
-                    'Done',
-                    style: TextStyle(color: Colors.black),
-                  ),
-                )
-              ],
-            );
-          },
-        );
-      },
     );
   }
 }

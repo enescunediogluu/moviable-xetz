@@ -6,11 +6,13 @@ class ModifiedText extends StatelessWidget {
   final String text;
   final Color color;
   final double size;
+  final FontWeight fontWeight;
   const ModifiedText({
     super.key,
     required this.text,
     required this.color,
     required this.size,
+    this.fontWeight = FontWeight.normal,
   });
 
   @override
