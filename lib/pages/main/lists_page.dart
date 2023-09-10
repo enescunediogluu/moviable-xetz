@@ -5,7 +5,7 @@ import 'package:moviable/constants/colors.dart';
 import 'package:moviable/pages/extra/create_lists_page.dart';
 import 'package:moviable/services/database_service.dart';
 import 'package:moviable/utils/text.dart';
-import 'package:moviable/widgets/lists_page_widgets/favorites_list_view.dart';
+import 'package:moviable/widgets/lists_page_widgets/favorites/favorites_list_view.dart';
 import 'package:moviable/widgets/lists_page_widgets/watch_list_view.dart';
 
 class ListsPage extends StatefulWidget {
@@ -240,20 +240,20 @@ class GeneralListWidget extends StatelessWidget {
           return InkWell(
             onLongPress: () => onLongPress(listDetails['listId']),
             child: Container(
-              margin: const EdgeInsets.all(8),
+              margin: const EdgeInsets.only(bottom: 8),
               decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [
-                      Color(0xff016A70),
-                      Color(0xff7286D3),
+                      Color(0xff252B48),
+                      Color(0xff445069),
                     ],
                   ),
                   borderRadius: BorderRadius.circular(15)),
               child: Row(children: [
                 Container(
                   padding: const EdgeInsets.all(8),
-                  width: 90,
-                  height: 90,
+                  width: 60,
+                  height: 60,
                   decoration: BoxDecoration(
                       borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(15),
@@ -261,7 +261,7 @@ class GeneralListWidget extends StatelessWidget {
                       image: DecorationImage(
                           image: NetworkImage((posterPath != "")
                               ? posterPath
-                              : 'https://pbs.twimg.com/profile_images/737023860839747584/hDWpm4OB_400x400.jpg'),
+                              : 'https://i.pinimg.com/564x/c1/ae/86/c1ae864b0ea941be0362c6d45fad10af.jpg'),
                           fit: BoxFit.cover)),
                 ),
                 const SizedBox(

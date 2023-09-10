@@ -20,6 +20,7 @@ class ModifiedText extends StatelessWidget {
     return AutoSizeText(
       text,
       textAlign: TextAlign.center,
+      overflow: TextOverflow.fade,
       style: GoogleFonts.poppins(
         color: color,
         fontSize: size,
@@ -45,6 +46,7 @@ class HeaderText extends StatelessWidget {
     return Text(
       text,
       textAlign: TextAlign.start,
+      overflow: TextOverflow.fade,
       style: GoogleFonts.poppins(
         color: color,
         fontSize: size,

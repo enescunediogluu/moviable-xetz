@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:moviable/constants/colors.dart';
+import 'package:moviable/pages/main/navbar_trial.dart';
 import 'package:moviable/services/database_service.dart';
 import 'package:moviable/utils/text.dart';
 
@@ -39,7 +40,14 @@ class _FavoritesListViewState extends State<FavoritesListView> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const NavbarTrial(
+                    definedIndex: 2,
+                  ),
+                ),
+                (route) => false);
           },
         ),
         backgroundColor: secondaryColor,
@@ -64,7 +72,7 @@ class _FavoritesListViewState extends State<FavoritesListView> {
         physics: const PageScrollPhysics(parent: BouncingScrollPhysics()),
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
           const SizedBox(
-            height: 20,
+            height: 10,
           ),
           favorites.isEmpty
               ? Center(
@@ -88,13 +96,13 @@ class _FavoritesListViewState extends State<FavoritesListView> {
                   ),
                 )
               : SizedBox(
-                  height: MediaQuery.of(context).size.height - 200,
+                  height: MediaQuery.of(context).size.height - 120,
                   child: GridView.builder(
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       childAspectRatio: 0.59,
-                      mainAxisSpacing: 50,
+                      mainAxisSpacing: 5,
                       crossAxisSpacing: 5,
                     ),
                     physics:
@@ -113,18 +121,15 @@ class _FavoritesListViewState extends State<FavoritesListView> {
                             isSelectedList[index] = !isSelectedList[index];
                           });
                         },
-                        onTap: () async {
-                          showDeleteDialog(context, index, id);
-                        },
                         child: Container(
                           width: 150,
                           margin: const EdgeInsets.all(8),
-                          child: Stack(
+                          child: Column(
                             children: [
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(15),
                                 child: Container(
-                                    height: 280,
+                                    height: 270,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(15),
                                       image: DecorationImage(
@@ -140,43 +145,38 @@ class _FavoritesListViewState extends State<FavoritesListView> {
                                                     sigmaX: 3, sigmaY: 3)
                                                 : ImageFilter.blur(),
                                             child: Center(
-                                              child: CircleAvatar(
-                                                backgroundColor: primaryColor
-                                                    .withOpacity(0.8),
-                                                radius: 25,
-                                                child: const Icon(
-                                                  Icons.delete,
-                                                  size: 40,
-                                                  color: secondaryColor,
+                                              child: InkWell(
+                                                onTap: () async {
+                                                  await showDeleteDialog(
+                                                      context, index, id);
+                                                  setState(() {
+                                                    isSelectedList[index] =
+                                                        false;
+                                                  });
+                                                },
+                                                child: CircleAvatar(
+                                                  backgroundColor: primaryColor
+                                                      .withOpacity(0.8),
+                                                  radius: 25,
+                                                  child: const Icon(
+                                                    Icons.delete,
+                                                    size: 40,
+                                                    color: secondaryColor,
+                                                  ),
                                                 ),
                                               ),
                                             ),
                                           )
                                         : null),
                               ),
-                              Positioned(
-                                bottom: 0,
-                                left: 0,
-                                right: 0,
-                                child: Container(
-                                  height: 40,
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      begin: Alignment.topCenter,
-                                      end: Alignment.bottomCenter,
-                                      colors: [
-                                        Colors.transparent,
-                                        Colors.black.withOpacity(0.5),
-                                      ],
-                                    ),
-                                  ),
-                                  child: Center(
-                                    child: ModifiedText(
-                                      text: title,
-                                      color: Colors.white,
-                                      size: 13,
-                                    ),
-                                  ),
+                              const SizedBox(
+                                height: 5,
+                              ),
+                              Center(
+                                child: ModifiedText(
+                                  text: title,
+                                  color: Colors.white,
+                                  size: 13,
                                 ),
                               ),
                             ],
@@ -186,6 +186,9 @@ class _FavoritesListViewState extends State<FavoritesListView> {
                     },
                   ),
                 ),
+          const SizedBox(
+            height: 25,
+          )
         ]),
       ),
     );
@@ -217,7 +220,7 @@ class _FavoritesListViewState extends State<FavoritesListView> {
                 ],
               ),
               const ModifiedText(
-                  text: 'You sure you want to remove it from favorites?',
+                  text: 'Are you sure you want to remove it from favorites?',
                   color: Colors.white,
                   size: 15),
               const SizedBox(
@@ -233,9 +236,6 @@ class _FavoritesListViewState extends State<FavoritesListView> {
                               borderRadius: BorderRadius.circular(15))),
                       onPressed: () {
                         Navigator.of(context).pop();
-                        setState(() {
-                          isSelectedList[index] = false;
-                        });
                       },
                       child: const ModifiedText(
                           text: 'Cancel', color: secondaryColor, size: 15)),
@@ -260,7 +260,7 @@ class _FavoritesListViewState extends State<FavoritesListView> {
                       child: const ModifiedText(
                           text: 'Delete', color: secondaryColor, size: 15))
                 ],
-              )
+              ),
             ],
           ),
         );
