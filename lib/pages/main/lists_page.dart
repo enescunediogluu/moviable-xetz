@@ -242,7 +242,13 @@ class GeneralListWidget extends StatelessWidget {
             child: Container(
               margin: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                  color: color, borderRadius: BorderRadius.circular(15)),
+                  gradient: const LinearGradient(
+                    colors: [
+                      Color(0xff016A70),
+                      Color(0xff7286D3),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(15)),
               child: Row(children: [
                 Container(
                   padding: const EdgeInsets.all(8),

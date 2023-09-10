@@ -105,6 +105,7 @@ class _FavoritesListViewState extends State<FavoritesListView> {
                       final movieDetails = favorites[index];
                       final String title = movieDetails['name'];
                       final String posterPath = movieDetails['posterUrl'];
+                      final int id = movieDetails['id'];
 
                       return GestureDetector(
                         onLongPress: () {
@@ -113,13 +114,7 @@ class _FavoritesListViewState extends State<FavoritesListView> {
                           });
                         },
                         onTap: () async {
-                          if (isSelectedList[index]) {
-                            await database
-                                .removeFromFavorites(movieDetails['id']);
-                            setState(() {
-                              getFavouritesFromFirebase();
-                            });
-                          }
+                          showDeleteDialog(context, index, id);
                         },
                         child: Container(
                           width: 150,
@@ -193,6 +188,83 @@ class _FavoritesListViewState extends State<FavoritesListView> {
                 ),
         ]),
       ),
+    );
+  }
+
+  showDeleteDialog(BuildContext context, dynamic index, int id) async {
+    return showModalBottomSheet(
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(25), topRight: Radius.circular(25))),
+      context: context,
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.delete_forever,
+                    size: 20,
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  ModifiedText(text: 'Delete', color: Colors.white, size: 30),
+                ],
+              ),
+              const ModifiedText(
+                  text: 'You sure you want to remove it from favorites?',
+                  color: Colors.white,
+                  size: 15),
+              const SizedBox(
+                height: 15,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: primaryColor,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15))),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        setState(() {
+                          isSelectedList[index] = false;
+                        });
+                      },
+                      child: const ModifiedText(
+                          text: 'Cancel', color: secondaryColor, size: 15)),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: primaryColor,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15))),
+                      onPressed: () async {
+                        if (isSelectedList[index]) {
+                          await database.removeFromFavorites(id);
+                          setState(() {
+                            getFavouritesFromFirebase();
+                          });
+
+                          Navigator.of(context).pop();
+                        }
+                      },
+                      child: const ModifiedText(
+                          text: 'Delete', color: secondaryColor, size: 15))
+                ],
+              )
+            ],
+          ),
+        );
+      },
     );
   }
 }
