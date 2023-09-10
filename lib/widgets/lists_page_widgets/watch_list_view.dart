@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:moviable/constants/colors.dart';
 import 'package:moviable/services/database_service.dart';
 import 'package:moviable/utils/text.dart';
 
@@ -31,11 +32,37 @@ class _WatchListViewState extends State<WatchListView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: secondaryColor,
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        centerTitle: true,
+        backgroundColor: secondaryColor,
+        title: const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.watch_later_outlined,
+              size: 32,
+              color: primaryColor,
+            ),
+            SizedBox(
+              width: 5,
+            ),
+            ModifiedText(
+              text: 'Watch List',
+              size: 35,
+              color: Colors.white,
+            ),
+          ],
+        ),
+      ),
       body: Column(
         children: [
-          const SizedBox(
-            height: 60,
-          ),
           watchList.isEmpty
               ? SizedBox(
                   height: 200,
@@ -61,11 +88,11 @@ class _WatchListViewState extends State<WatchListView> {
                   ),
                 )
               : SizedBox(
-                  height: 220,
+                  height: MediaQuery.of(context).size.height - 100,
                   child: ListView.builder(
                     physics:
                         const ScrollPhysics(parent: BouncingScrollPhysics()),
-                    scrollDirection: Axis.horizontal,
+                    scrollDirection: Axis.vertical,
                     itemCount: watchList.length,
                     itemBuilder: (context, index) {
                       final movieDetails = watchList[index];

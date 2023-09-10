@@ -45,6 +45,8 @@ class _SearchPageState extends State<SearchPage> {
     return Scaffold(
       backgroundColor: Colors.black,
       body: ListView(
+        physics: const PageScrollPhysics(parent: BouncingScrollPhysics()),
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         children: [
           const SizedBox(
             height: 10,

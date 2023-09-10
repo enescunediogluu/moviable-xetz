@@ -188,12 +188,12 @@ class _ListsPageState extends State<ListsPage> {
                       child: TabBarView(
                         children: [
                           GeneralListWidget(
-                            myLists: myLists,
+                            lists: myLists,
                             color: const Color(0xff222831),
                             onLongPress: deleteLists,
                           ),
                           GeneralListWidget(
-                            myLists: myLists,
+                            lists: myLists,
                             color: const Color(0xff222831),
                             onLongPress: unfollowList,
                           ),
@@ -216,12 +216,12 @@ unfollowList(String id) {}
 class GeneralListWidget extends StatelessWidget {
   const GeneralListWidget({
     super.key,
-    required this.myLists,
+    required this.lists,
     required this.color,
     required this.onLongPress,
   });
 
-  final List myLists;
+  final List lists;
   final Color color;
   final Function(String id) onLongPress;
 
@@ -232,9 +232,9 @@ class GeneralListWidget extends StatelessWidget {
       child: ListView.builder(
         physics: const ScrollPhysics(parent: BouncingScrollPhysics()),
         scrollDirection: Axis.vertical,
-        itemCount: myLists.length,
+        itemCount: lists.length,
         itemBuilder: (context, index) {
-          final listDetails = myLists[index];
+          final listDetails = lists[index];
           final posterPath = listDetails['listIcon'];
           final title = listDetails['listName'];
           return InkWell(
@@ -242,14 +242,16 @@ class GeneralListWidget extends StatelessWidget {
             child: Container(
               margin: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                  color: color, borderRadius: BorderRadius.circular(25)),
+                  color: color, borderRadius: BorderRadius.circular(15)),
               child: Row(children: [
                 Container(
                   padding: const EdgeInsets.all(8),
                   width: 90,
                   height: 90,
                   decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(25),
+                      borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(15),
+                          bottomLeft: Radius.circular(15)),
                       image: DecorationImage(
                           image: NetworkImage((posterPath != "")
                               ? posterPath

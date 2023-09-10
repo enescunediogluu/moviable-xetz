@@ -28,6 +28,8 @@ class SeriesSearchResults extends StatelessWidget {
                 SizedBox(
                   height: 270,
                   child: ListView.builder(
+                    keyboardDismissBehavior:
+                        ScrollViewKeyboardDismissBehavior.onDrag,
                     itemCount: results.length,
                     scrollDirection: Axis.horizontal,
                     itemBuilder: (context, index) {
