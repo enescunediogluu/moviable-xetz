@@ -1,35 +1,47 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:moviable/constants/colors.dart';
-import 'package:moviable/pages/main/navbar_trial.dart';
 import 'package:moviable/services/database_service.dart';
 import 'package:moviable/utils/text.dart';
 
-class FavoritesListView extends StatefulWidget {
-  const FavoritesListView({Key? key}) : super(key: key);
+class WatchListView extends StatefulWidget {
+  const WatchListView({super.key});
 
   @override
-  State<FavoritesListView> createState() => _FavoritesListViewState();
+  State<WatchListView> createState() => _WatchListViewState();
 }
 
-class _FavoritesListViewState extends State<FavoritesListView> {
-  List favorites = [];
+class _WatchListViewState extends State<WatchListView> {
+  List watchList = [];
   final DatabaseService database = DatabaseService();
   List<bool> isSelectedList = [];
 
-  void getFavouritesFromFirebase() async {
-    final favouritesList = await database.getFavorites();
+  void getWatchListFromFirebase() async {
+    final watchLaterList = await database.getWatchList();
     setState(() {
-      favorites = favouritesList;
-      isSelectedList = List.generate(favorites.length, (index) => false);
+      watchList = watchLaterList;
+      isSelectedList = List.generate(watchList.length, (index) => false);
     });
+  }
+
+  removeFromWatchList(int index, int id) async {
+    if (isSelectedList[index]) {
+      await database.removeFromWatchList(id);
+      setState(() {
+        getWatchListFromFirebase();
+      });
+
+      Navigator.of(context).pop();
+    }
   }
 
   @override
   void initState() {
+    getWatchListFromFirebase();
     super.initState();
-    getFavouritesFromFirebase();
   }
 
   @override
@@ -40,41 +52,33 @@ class _FavoritesListViewState extends State<FavoritesListView> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
           onPressed: () {
-            Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const NavbarTrial(
-                    definedIndex: 2,
-                  ),
-                ),
-                (route) => false);
+            Navigator.of(context).pop();
           },
         ),
-        backgroundColor: secondaryColor,
         centerTitle: true,
+        backgroundColor: secondaryColor,
         title: const Row(
-          mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-              Icons.favorite_outline_outlined,
+              Icons.watch_later_outlined,
               size: 32,
               color: primaryColor,
             ),
             SizedBox(
               width: 5,
             ),
-            ModifiedText(text: 'Favorites', color: Colors.white, size: 35),
+            ModifiedText(
+              text: 'Watch List',
+              size: 35,
+              color: Colors.white,
+            ),
           ],
         ),
       ),
-      body: SingleChildScrollView(
-        physics: const PageScrollPhysics(parent: BouncingScrollPhysics()),
-        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          const SizedBox(
-            height: 10,
-          ),
-          favorites.isEmpty
+      body: Column(
+        children: [
+          watchList.isEmpty
               ? Center(
                   child: Column(
                     children: [
@@ -82,7 +86,7 @@ class _FavoritesListViewState extends State<FavoritesListView> {
                         height: 250,
                       ),
                       const Icon(
-                        Icons.heart_broken,
+                        Icons.watch_later_outlined,
                         color: Colors.amber,
                       ),
                       const SizedBox(
@@ -96,33 +100,35 @@ class _FavoritesListViewState extends State<FavoritesListView> {
                   ),
                 )
               : SizedBox(
-                  height: MediaQuery.of(context).size.height - 120,
+                  height: MediaQuery.of(context).size.height - 100,
                   child: GridView.builder(
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       childAspectRatio: 0.59,
-                      mainAxisSpacing: 5,
+                      mainAxisSpacing: 50,
                       crossAxisSpacing: 5,
                     ),
                     physics:
                         const ScrollPhysics(parent: BouncingScrollPhysics()),
                     scrollDirection: Axis.vertical,
-                    itemCount: favorites.length,
+                    itemCount: watchList.length,
                     itemBuilder: (context, index) {
-                      final movieDetails = favorites[index];
-                      final String title = movieDetails['name'];
+                      final movieDetails = watchList[index];
+                      final String title = movieDetails[
+                          'name']; // Replace with the actual key for movie title in the response
                       final String posterPath = movieDetails['posterUrl'];
                       final int id = movieDetails['id'];
+                      // Replace with the actual key for the poster path
 
                       return GestureDetector(
-                        onLongPress: () {
+                        onLongPress: () async {
                           setState(() {
                             isSelectedList[index] = !isSelectedList[index];
                           });
                         },
                         child: Container(
-                          width: 150,
+                          width: 150, // Set the width as per your design
                           margin: const EdgeInsets.all(8),
                           child: Column(
                             children: [
@@ -148,7 +154,14 @@ class _FavoritesListViewState extends State<FavoritesListView> {
                                               child: InkWell(
                                                 onTap: () async {
                                                   await showDeleteDialog(
-                                                      context, index, id);
+                                                    context,
+                                                    index,
+                                                    id,
+                                                    () async {
+                                                      await removeFromWatchList(
+                                                          index, id);
+                                                    },
+                                                  );
                                                   setState(() {
                                                     isSelectedList[index] =
                                                         false;
@@ -169,14 +182,12 @@ class _FavoritesListViewState extends State<FavoritesListView> {
                                           )
                                         : null),
                               ),
-                              const SizedBox(
-                                height: 5,
-                              ),
+                              const SizedBox(height: 5),
                               Center(
                                 child: ModifiedText(
                                   text: title,
-                                  color: Colors.white,
                                   size: 13,
+                                  color: Colors.white,
                                 ),
                               ),
                             ],
@@ -186,15 +197,17 @@ class _FavoritesListViewState extends State<FavoritesListView> {
                     },
                   ),
                 ),
-          const SizedBox(
-            height: 25,
-          )
-        ]),
+        ],
       ),
     );
   }
 
-  showDeleteDialog(BuildContext context, dynamic index, int id) async {
+  showDeleteDialog(
+    BuildContext context,
+    dynamic index,
+    int id,
+    void Function()? function,
+  ) async {
     return showModalBottomSheet(
       shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
@@ -220,7 +233,7 @@ class _FavoritesListViewState extends State<FavoritesListView> {
                 ],
               ),
               const ModifiedText(
-                  text: 'Are you sure you want to remove it from favorites?',
+                  text: 'Are you sure you want to remove it from watch list?',
                   color: Colors.white,
                   size: 15),
               const SizedBox(
@@ -247,16 +260,7 @@ class _FavoritesListViewState extends State<FavoritesListView> {
                           backgroundColor: primaryColor,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(15))),
-                      onPressed: () async {
-                        if (isSelectedList[index]) {
-                          await database.removeFromFavorites(id);
-                          setState(() {
-                            getFavouritesFromFirebase();
-                          });
-
-                          Navigator.of(context).pop();
-                        }
-                      },
+                      onPressed: function,
                       child: const ModifiedText(
                           text: 'Delete', color: secondaryColor, size: 15))
                 ],

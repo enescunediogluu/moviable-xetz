@@ -5,8 +5,8 @@ import 'package:moviable/constants/colors.dart';
 import 'package:moviable/pages/extra/create_lists_page.dart';
 import 'package:moviable/services/database_service.dart';
 import 'package:moviable/utils/text.dart';
-import 'package:moviable/widgets/lists_page_widgets/favorites/favorites_list_view.dart';
-import 'package:moviable/widgets/lists_page_widgets/watch_list_view.dart';
+import 'package:moviable/pages/extra/favorites_list_view.dart';
+import 'package:moviable/pages/extra/watch_list_view.dart';
 
 class ListsPage extends StatefulWidget {
   const ListsPage({super.key});

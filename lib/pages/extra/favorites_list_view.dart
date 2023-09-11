@@ -1,42 +1,37 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:moviable/constants/colors.dart';
+import 'package:moviable/pages/main/navbar_trial.dart';
 import 'package:moviable/services/database_service.dart';
 import 'package:moviable/utils/text.dart';
 
-class WatchListView extends StatefulWidget {
-  const WatchListView({super.key});
+class FavoritesListView extends StatefulWidget {
+  const FavoritesListView({Key? key}) : super(key: key);
 
   @override
-  State<WatchListView> createState() => _WatchListViewState();
+  State<FavoritesListView> createState() => _FavoritesListViewState();
 }
 
-class _WatchListViewState extends State<WatchListView> {
-  List watchList = [];
+class _FavoritesListViewState extends State<FavoritesListView> {
+  List favorites = [];
   final DatabaseService database = DatabaseService();
   List<bool> isSelectedList = [];
 
-  void getWatchListFromFirebase() async {
-    final watchLaterList = await database.getWatchList();
+  void getFavouritesFromFirebase() async {
+    final favouritesList = await database.getFavorites();
     setState(() {
-      watchList = watchLaterList;
-      isSelectedList = List.generate(watchList.length, (index) => false);
+      favorites = favouritesList;
+      isSelectedList = List.generate(favorites.length, (index) => false);
     });
-  }
-
-  removeFromWatchList(int index, int id) async {
-    if (isSelectedList[index]) {
-      await database.removeFromWatchList(id);
-
-      Navigator.of(context).pop();
-    }
   }
 
   @override
   void initState() {
-    getWatchListFromFirebase();
     super.initState();
+    getFavouritesFromFirebase();
   }
 
   @override
@@ -47,33 +42,41 @@ class _WatchListViewState extends State<WatchListView> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
           onPressed: () {
-            Navigator.of(context).pop();
+            Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const NavbarTrial(
+                    definedIndex: 2,
+                  ),
+                ),
+                (route) => false);
           },
         ),
-        centerTitle: true,
         backgroundColor: secondaryColor,
+        centerTitle: true,
         title: const Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-              Icons.watch_later_outlined,
+              Icons.favorite_outline_outlined,
               size: 32,
               color: primaryColor,
             ),
             SizedBox(
               width: 5,
             ),
-            ModifiedText(
-              text: 'Watch List',
-              size: 35,
-              color: Colors.white,
-            ),
+            ModifiedText(text: 'Favorites', color: Colors.white, size: 35),
           ],
         ),
       ),
-      body: Column(
-        children: [
-          watchList.isEmpty
+      body: SingleChildScrollView(
+        physics: const PageScrollPhysics(parent: BouncingScrollPhysics()),
+        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+          const SizedBox(
+            height: 10,
+          ),
+          favorites.isEmpty
               ? Center(
                   child: Column(
                     children: [
@@ -81,7 +84,7 @@ class _WatchListViewState extends State<WatchListView> {
                         height: 250,
                       ),
                       const Icon(
-                        Icons.watch_later_outlined,
+                        Icons.heart_broken,
                         color: Colors.amber,
                       ),
                       const SizedBox(
@@ -95,35 +98,33 @@ class _WatchListViewState extends State<WatchListView> {
                   ),
                 )
               : SizedBox(
-                  height: MediaQuery.of(context).size.height - 100,
+                  height: MediaQuery.of(context).size.height - 120,
                   child: GridView.builder(
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       childAspectRatio: 0.59,
-                      mainAxisSpacing: 50,
+                      mainAxisSpacing: 5,
                       crossAxisSpacing: 5,
                     ),
                     physics:
                         const ScrollPhysics(parent: BouncingScrollPhysics()),
                     scrollDirection: Axis.vertical,
-                    itemCount: watchList.length,
+                    itemCount: favorites.length,
                     itemBuilder: (context, index) {
-                      final movieDetails = watchList[index];
-                      final String title = movieDetails[
-                          'name']; // Replace with the actual key for movie title in the response
+                      final movieDetails = favorites[index];
+                      final String title = movieDetails['name'];
                       final String posterPath = movieDetails['posterUrl'];
                       final int id = movieDetails['id'];
-                      // Replace with the actual key for the poster path
 
                       return GestureDetector(
-                        onLongPress: () async {
+                        onLongPress: () {
                           setState(() {
                             isSelectedList[index] = !isSelectedList[index];
                           });
                         },
                         child: Container(
-                          width: 150, // Set the width as per your design
+                          width: 150,
                           margin: const EdgeInsets.all(8),
                           child: Column(
                             children: [
@@ -170,12 +171,14 @@ class _WatchListViewState extends State<WatchListView> {
                                           )
                                         : null),
                               ),
-                              const SizedBox(height: 5),
+                              const SizedBox(
+                                height: 5,
+                              ),
                               Center(
                                 child: ModifiedText(
                                   text: title,
-                                  size: 13,
                                   color: Colors.white,
+                                  size: 13,
                                 ),
                               ),
                             ],
@@ -185,7 +188,10 @@ class _WatchListViewState extends State<WatchListView> {
                     },
                   ),
                 ),
-        ],
+          const SizedBox(
+            height: 25,
+          )
+        ]),
       ),
     );
   }
@@ -216,7 +222,7 @@ class _WatchListViewState extends State<WatchListView> {
                 ],
               ),
               const ModifiedText(
-                  text: 'Are you sure you want to remove it from watch list?',
+                  text: 'Are you sure you want to remove it from favorites?',
                   color: Colors.white,
                   size: 15),
               const SizedBox(
@@ -245,9 +251,9 @@ class _WatchListViewState extends State<WatchListView> {
                               borderRadius: BorderRadius.circular(15))),
                       onPressed: () async {
                         if (isSelectedList[index]) {
-                          await database.removeFromWatchList(id);
+                          await database.removeFromFavorites(id);
                           setState(() {
-                            getWatchListFromFirebase();
+                            getFavouritesFromFirebase();
                           });
 
                           Navigator.of(context).pop();

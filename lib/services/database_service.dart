@@ -329,4 +329,62 @@ class DatabaseService {
       log('error while trying to delete the list');
     }
   }
+
+  //checking before if user has already added this movie to their lists
+  Future<bool> checkIfAlreadyOnTheList(String listId, int movieId) async {
+    try {
+      DocumentReference docRef = listsCollection.doc(uid);
+      DocumentSnapshot snapshot = await docRef.get();
+
+      if (snapshot.exists) {
+        Map<String, dynamic>? userData =
+            snapshot.data() as Map<String, dynamic>?;
+
+        if (userData != null && userData['content'] != null) {
+          List<dynamic> customList = userData['content'];
+
+          bool alreadyOnWatchList =
+              customList.any((movie) => movie['id'] == movieId);
+
+          return alreadyOnWatchList;
+        }
+      }
+      return false;
+    } catch (e) {
+      log("Error checking if movie exists: $e");
+      return false;
+    }
+  }
+
+  //adding movies to the custom lists
+  Future addMoviesToCustomLists(
+    String listId,
+    String movieName,
+    int movieId,
+    String launchOn,
+    String posterUrl,
+    String vote,
+    String bannerUrl,
+    String description,
+    bool isItMovie,
+  ) async {
+    DocumentReference docRef = listsCollection.doc(listId);
+    final flag = await checkIfAlreadyOnTheList(listId, movieId);
+    if (flag == false) {
+      await docRef.update({
+        "content": FieldValue.arrayUnion([
+          {
+            'name': movieName,
+            'id': movieId,
+            'description': description,
+            'bannerUrl': bannerUrl,
+            'posterUrl': posterUrl,
+            'vote': vote,
+            'launchOn': launchOn,
+            'isItMovie': isItMovie
+          }
+        ])
+      });
+    }
+  }
 }
