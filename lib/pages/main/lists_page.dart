@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:moviable/constants/colors.dart';
 import 'package:moviable/pages/extra/create_lists_page.dart';
+import 'package:moviable/pages/extra/custom_lists_content_page.dart';
 import 'package:moviable/services/database_service.dart';
 import 'package:moviable/utils/text.dart';
 import 'package:moviable/pages/extra/favorites_list_view.dart';
@@ -191,11 +192,17 @@ class _ListsPageState extends State<ListsPage> {
                             lists: myLists,
                             color: const Color(0xff222831),
                             onLongPress: deleteLists,
+                            onTap: (id) {
+                              goToListPage(context, id);
+                            },
                           ),
                           GeneralListWidget(
                             lists: myLists,
                             color: const Color(0xff222831),
                             onLongPress: unfollowList,
+                            onTap: (id) {
+                              goToListPage(context, id);
+                            },
                           ),
                         ],
                       ),
@@ -211,6 +218,12 @@ class _ListsPageState extends State<ListsPage> {
   }
 }
 
+goToListPage(BuildContext context, String id) {
+  Navigator.of(context).push(MaterialPageRoute(
+    builder: (context) => CustomListsContentPage(listId: id),
+  ));
+}
+
 unfollowList(String id) {}
 
 class GeneralListWidget extends StatelessWidget {
@@ -219,11 +232,13 @@ class GeneralListWidget extends StatelessWidget {
     required this.lists,
     required this.color,
     required this.onLongPress,
+    required this.onTap,
   });
 
   final List lists;
   final Color color;
   final Function(String id) onLongPress;
+  final void Function(String id) onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -238,6 +253,7 @@ class GeneralListWidget extends StatelessWidget {
           final posterPath = listDetails['listIcon'];
           final title = listDetails['listName'];
           return InkWell(
+            onTap: () => onTap(listDetails['listId']),
             onLongPress: () => onLongPress(listDetails['listId']),
             child: Container(
               margin: const EdgeInsets.only(bottom: 8),

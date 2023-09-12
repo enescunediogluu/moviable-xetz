@@ -265,7 +265,7 @@ class DatabaseService {
   }
 
   //creating custom lists
-  Future createList(
+  Future<void> createList(
       String username, String listName, String profilePic, bool private) async {
     DocumentReference docRef = await listsCollection.add({
       "adminId": uid,
@@ -302,12 +302,12 @@ class DatabaseService {
     }
   }
 
-  Future deleteListsFromListDocuments(String listId) async {
+  Future<void> deleteListsFromListDocuments(String listId) async {
     DocumentReference docRef = listsCollection.doc(listId);
     await docRef.delete();
   }
 
-  Future deleteListsFromCreatedLists(String listId) async {
+  Future<void> deleteListsFromCreatedLists(String listId) async {
     DocumentReference docRef = userCollection.doc(uid);
     DocumentSnapshot snapshot = await docRef.get();
     await deleteListsFromListDocuments(listId);
@@ -329,7 +329,9 @@ class DatabaseService {
       log('error while trying to delete the list');
     }
   }
+}
 
+class CustomListService extends DatabaseService {
   //checking before if user has already added this movie to their lists
   Future<bool> checkIfAlreadyOnTheList(String listId, int movieId) async {
     try {
@@ -337,11 +339,12 @@ class DatabaseService {
       DocumentSnapshot snapshot = await docRef.get();
 
       if (snapshot.exists) {
-        Map<String, dynamic>? userData =
+        Map<String, dynamic>? contentData =
             snapshot.data() as Map<String, dynamic>?;
 
-        if (userData != null && userData['content'] != null) {
-          List<dynamic> customList = userData['content'];
+        if (contentData != null && contentData['content'] != null) {
+          List<dynamic> customList = contentData['content'];
+          log(customList.toString());
 
           bool alreadyOnWatchList =
               customList.any((movie) => movie['id'] == movieId);
@@ -357,7 +360,7 @@ class DatabaseService {
   }
 
   //adding movies to the custom lists
-  Future addMoviesToCustomLists(
+  Future<String> addMoviesToCustomLists(
     String listId,
     String movieName,
     int movieId,
@@ -370,6 +373,7 @@ class DatabaseService {
   ) async {
     DocumentReference docRef = listsCollection.doc(listId);
     final flag = await checkIfAlreadyOnTheList(listId, movieId);
+    log(flag.toString());
     if (flag == false) {
       await docRef.update({
         "content": FieldValue.arrayUnion([
@@ -385,6 +389,40 @@ class DatabaseService {
           }
         ])
       });
+
+      return "This movie added succesfully";
+    } else {
+      return "This movie alredy exists in your lis!";
+    }
+  }
+
+  Future removeContentFromCustomList(String listId, int movieId) async {
+    DocumentReference docRef = listsCollection.doc(listId);
+    DocumentSnapshot snapshot = await listsCollection.doc(listId).get();
+    try {
+      if (snapshot.exists) {
+        if (snapshot['content'] != null) {
+          List<dynamic> customList = snapshot['content'];
+          List<dynamic> updatedCustomList = [];
+          for (var content in customList) {
+            if (content['id'] != movieId) {
+              updatedCustomList.add(content);
+            }
+          }
+          await docRef.update({'content': updatedCustomList});
+        }
+      }
+    } catch (e) {
+      log('error deleting favorite');
+    }
+  }
+
+  Future<DocumentSnapshot?> getListDataFromDatabase(String listId) async {
+    DocumentSnapshot snapshot = await listsCollection.doc(listId).get();
+    if (snapshot.exists) {
+      return snapshot;
+    } else {
+      return null;
     }
   }
 }

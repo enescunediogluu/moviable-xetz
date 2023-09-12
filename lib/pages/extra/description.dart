@@ -1,4 +1,4 @@
-// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: non_constant_identifier_names, use_build_context_synchronously
 
 import 'dart:developer';
 
@@ -43,6 +43,7 @@ class _DescriptionState extends State<Description> {
   List myCreatedLists = [];
 
   final DatabaseService database = DatabaseService();
+  final CustomListService customListService = CustomListService();
 
   @override
   void initState() {
@@ -115,9 +116,7 @@ class _DescriptionState extends State<Description> {
     return Scaffold(
       backgroundColor: Colors.black,
       body: ListView(
-        physics: const PageScrollPhysics(
-            parent: BouncingScrollPhysics(
-                decelerationRate: ScrollDecelerationRate.fast)),
+        physics: const BouncingScrollPhysics(),
         children: [
           SizedBox(
             height: 250,
@@ -318,6 +317,7 @@ class AddToPlaylistButton extends StatefulWidget {
 
 class _AddToPlaylistButtonState extends State<AddToPlaylistButton> {
   final DatabaseService database = DatabaseService();
+  final CustomListService customListService = CustomListService();
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -363,8 +363,9 @@ class _AddToPlaylistButtonState extends State<AddToPlaylistButton> {
                         child: GeneralListWidget(
                           lists: widget.customList,
                           color: Colors.white,
-                          onLongPress: (id) async {
-                            await database.addMoviesToCustomLists(
+                          onTap: (id) async {
+                            final message =
+                                await customListService.addMoviesToCustomLists(
                               id,
                               widget.movieName,
                               widget.movieId,
@@ -375,7 +376,11 @@ class _AddToPlaylistButtonState extends State<AddToPlaylistButton> {
                               widget.description,
                               widget.isItMovie,
                             );
+
+                            Navigator.of(context).pop();
+                            log(message);
                           },
+                          onLongPress: (id) async {},
                         ),
                       )
                     ],

@@ -24,6 +24,7 @@ class ModifiedText extends StatelessWidget {
       style: GoogleFonts.poppins(
         color: color,
         fontSize: size,
+        fontWeight: fontWeight,
       ),
       maxLines: 2,
     );
@@ -34,23 +35,22 @@ class HeaderText extends StatelessWidget {
   final String text;
   final Color color;
   final double size;
-  const HeaderText({
-    super.key,
-    required this.text,
-    required this.color,
-    required this.size,
-  });
+  final FontWeight fontWeight;
+  const HeaderText(
+      {super.key,
+      required this.text,
+      required this.color,
+      required this.size,
+      this.fontWeight = FontWeight.normal});
 
   @override
   Widget build(BuildContext context) {
-    return Text(
+    return AutoSizeText(
       text,
       textAlign: TextAlign.start,
       overflow: TextOverflow.fade,
       style: GoogleFonts.poppins(
-        color: color,
-        fontSize: size,
-      ),
+          color: color, fontSize: size, fontWeight: fontWeight),
     );
   }
 }
