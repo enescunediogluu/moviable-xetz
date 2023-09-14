@@ -62,7 +62,7 @@ class _DescriptionState extends State<Description> {
   }
 
   loadMovieInformations() async {
-    TMDB tmdbWithCustomLogs = TMDB(ApiKeys(apiKey, readAccessToken),
+    TMDB tmdbWithCustomLogs = TMDB(ApiKeys(mainApiKey, mainReadAccessToken),
         logConfig: const ConfigLogger(showLogs: true, showErrorLogs: true));
 
     Map movieInfo = await tmdbWithCustomLogs.v3.movies.getDetails(widget.id);
@@ -79,7 +79,7 @@ class _DescriptionState extends State<Description> {
   }
 
   loadTvInformations() async {
-    TMDB tmdbWithCustomLogs = TMDB(ApiKeys(apiKey, readAccessToken),
+    TMDB tmdbWithCustomLogs = TMDB(ApiKeys(mainApiKey, mainReadAccessToken),
         logConfig: const ConfigLogger(showLogs: true, showErrorLogs: true));
 
     Map tvCredits = await tmdbWithCustomLogs.v3.tv.getCredits(widget.id);

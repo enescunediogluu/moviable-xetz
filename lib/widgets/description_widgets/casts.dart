@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_interpolation_to_compose_strings
 
 import 'package:flutter/material.dart';
+import 'package:moviable/constants/colors.dart';
 import 'package:moviable/utils/text.dart';
 
 class CastList extends StatelessWidget {
@@ -16,7 +17,7 @@ class CastList extends StatelessWidget {
         children: [
           const ModifiedText(
             text: 'Cast',
-            color: Colors.white,
+            color: sideColorWhite,
             size: 23,
           ),
           const SizedBox(
@@ -76,7 +77,7 @@ class CastList extends StatelessWidget {
                                   text: (castList[index]['name'] != null)
                                       ? castList[index]['name']
                                       : 'Loading',
-                                  color: Colors.white,
+                                  color: sideColorWhite,
                                   size: 15,
                                 )
                               ],
@@ -99,7 +100,7 @@ class CastList extends StatelessWidget {
                         ),
                         ModifiedText(
                           text: "Info not found!",
-                          color: Colors.white.withOpacity(0.6),
+                          color: sideColorWhite.withOpacity(0.6),
                           size: 16,
                         ),
                       ],

@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -42,11 +41,8 @@ class AuthChecker extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.active) {
           final user = snapshot.data;
           if (user == null) {
-            log('there is no user');
-            // User is not authenticated, show LoginPage
             return const LoginPage();
           } else {
-            log(user.emailVerified.toString());
             if (user.emailVerified == true) {
               return const NavbarTrial();
             } else {

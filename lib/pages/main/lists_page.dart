@@ -46,22 +46,7 @@ class _ListsPageState extends State<ListsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 50),
-        child: FloatingActionButton(
-          backgroundColor: primaryColor,
-          onPressed: () {
-            Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => const CreateListsPage(),
-            ));
-          },
-          child: const Icon(
-            Icons.add,
-            color: secondaryColor,
-            size: 30,
-          ),
-        ),
-      ),
+      floatingActionButton: const FloatingActionButtonWidget(),
       backgroundColor: secondaryColor,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -73,90 +58,20 @@ class _ListsPageState extends State<ListsPage> {
               const SizedBox(
                 height: 60,
               ),
-              Container(
-                height: 40,
-                decoration: BoxDecoration(
-                  color: Colors.grey,
-                  borderRadius: BorderRadius.circular(25),
-                ),
-                child: Center(
-                    child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.search,
-                      color: secondaryColor.withOpacity(0.8),
-                    ),
-                    ModifiedText(
-                        text: 'Search lists...',
-                        color: secondaryColor.withOpacity(0.8),
-                        size: 15)
-                  ],
-                )),
-              ),
+              const ListPageSearchbarWidget(),
               const SizedBox(
                 height: 25,
               ),
-              Row(
+              const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  InkWell(
-                    onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => const FavoritesListView(),
-                      ));
-                    },
-                    child: Column(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(10),
-                          width: 130,
-                          height: 130,
-                          decoration: BoxDecoration(
-                              image: const DecorationImage(
-                                  image:
-                                      AssetImage('assets/favorites_icon.png')),
-                              borderRadius: BorderRadius.circular(25)),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        const ModifiedText(
-                            text: 'Favorites', color: Colors.white, size: 20)
-                      ],
-                    ),
-                  ),
-                  const VerticalDivider(
+                  FavoritesButtonWidget(),
+                  VerticalDivider(
                     width: 15,
                     thickness: 3,
                     color: primaryColor,
                   ),
-                  InkWell(
-                    onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => const WatchListView(),
-                      ));
-                    },
-                    child: Column(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(10),
-                          width: 130,
-                          height: 130,
-                          decoration: BoxDecoration(
-                              image: const DecorationImage(
-                                  image: AssetImage(
-                                      'assets/watch_later_icon.png')),
-                              borderRadius: BorderRadius.circular(25)),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        const ModifiedText(
-                            text: 'Watch List', color: Colors.white, size: 20)
-                      ],
-                    ),
-                  ),
+                  WatchlistButtonWidget(),
                 ],
               ),
               const SizedBox(
@@ -218,13 +133,130 @@ class _ListsPageState extends State<ListsPage> {
   }
 }
 
-goToListPage(BuildContext context, String id) {
-  Navigator.of(context).push(MaterialPageRoute(
-    builder: (context) => CustomListsContentPage(listId: id),
-  ));
+class WatchlistButtonWidget extends StatelessWidget {
+  const WatchlistButtonWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => const WatchListView(),
+        ));
+      },
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            width: 130,
+            height: 130,
+            decoration: BoxDecoration(
+                image: const DecorationImage(
+                    image: AssetImage('assets/watch_later_icon.png')),
+                borderRadius: BorderRadius.circular(25)),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          const ModifiedText(text: 'Watch List', color: Colors.white, size: 20)
+        ],
+      ),
+    );
+  }
 }
 
-unfollowList(String id) {}
+class FavoritesButtonWidget extends StatelessWidget {
+  const FavoritesButtonWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => const FavoritesListView(),
+        ));
+      },
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            width: 130,
+            height: 130,
+            decoration: BoxDecoration(
+                image: const DecorationImage(
+                    image: AssetImage('assets/favorites_icon.png')),
+                borderRadius: BorderRadius.circular(25)),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          const ModifiedText(text: 'Favorites', color: Colors.white, size: 20)
+        ],
+      ),
+    );
+  }
+}
+
+class ListPageSearchbarWidget extends StatelessWidget {
+  const ListPageSearchbarWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 40,
+      decoration: BoxDecoration(
+        color: Colors.grey,
+        borderRadius: BorderRadius.circular(25),
+      ),
+      child: Center(
+          child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.search,
+            color: secondaryColor.withOpacity(0.8),
+          ),
+          ModifiedText(
+              text: 'Search lists...',
+              color: secondaryColor.withOpacity(0.8),
+              size: 15)
+        ],
+      )),
+    );
+  }
+}
+
+class FloatingActionButtonWidget extends StatelessWidget {
+  const FloatingActionButtonWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 50),
+      child: FloatingActionButton(
+        backgroundColor: primaryColor,
+        onPressed: () {
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => const CreateListsPage(),
+          ));
+        },
+        child: const Icon(
+          Icons.add,
+          color: secondaryColor,
+          size: 30,
+        ),
+      ),
+    );
+  }
+}
 
 class GeneralListWidget extends StatelessWidget {
   const GeneralListWidget({
@@ -299,3 +331,11 @@ class GeneralListWidget extends StatelessWidget {
     );
   }
 }
+
+goToListPage(BuildContext context, String id) {
+  Navigator.of(context).push(MaterialPageRoute(
+    builder: (context) => CustomListsContentPage(listId: id),
+  ));
+}
+
+unfollowList(String id) {}

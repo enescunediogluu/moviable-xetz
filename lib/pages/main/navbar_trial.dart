@@ -1,4 +1,7 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:flutter/material.dart';
+import 'package:moviable/constants/colors.dart';
 import 'package:moviable/pages/main/lists_page.dart';
 import 'package:moviable/pages/main/main_page.dart';
 import 'package:moviable/pages/main/profile_page.dart';
@@ -43,38 +46,42 @@ class _NavbarTrialState extends State<NavbarTrial> {
           decoration: BoxDecoration(
             border: Border(
                 top: BorderSide(
-              color: Colors.amber.withOpacity(0.1),
+              color: primaryColor.withOpacity(0.1),
               width: 1,
             )),
           ),
-          child: BottomNavigationBar(
-            backgroundColor: Colors.black,
-            currentIndex: selectedIndex,
-            selectedItemColor: Colors.amber,
-            onTap: onItemTapped,
-            items: const <BottomNavigationBarItem>[
-              BottomNavigationBarItem(
-                backgroundColor: Colors.black,
-                icon: Icon(Icons.home),
-                label: 'Home',
-              ),
-              BottomNavigationBarItem(
-                backgroundColor: Colors.black,
-                icon: Icon(Icons.search),
-                label: 'Search',
-              ),
-              BottomNavigationBarItem(
-                backgroundColor: Colors.black,
-                icon: Icon(Icons.list),
-                label: 'Lists',
-              ),
-              BottomNavigationBarItem(
-                backgroundColor: Colors.black,
-                icon: Icon(Icons.person),
-                label: 'Profile',
-              )
-            ],
-          ),
+          child: BottomNavigationBarWidget(),
         ));
+  }
+
+  BottomNavigationBar BottomNavigationBarWidget() {
+    return BottomNavigationBar(
+      backgroundColor: secondaryColor,
+      currentIndex: selectedIndex,
+      selectedItemColor: primaryColor,
+      onTap: onItemTapped,
+      items: const <BottomNavigationBarItem>[
+        BottomNavigationBarItem(
+          backgroundColor: Colors.black,
+          icon: Icon(Icons.home),
+          label: 'Home',
+        ),
+        BottomNavigationBarItem(
+          backgroundColor: Colors.black,
+          icon: Icon(Icons.search),
+          label: 'Search',
+        ),
+        BottomNavigationBarItem(
+          backgroundColor: Colors.black,
+          icon: Icon(Icons.list),
+          label: 'Lists',
+        ),
+        BottomNavigationBarItem(
+          backgroundColor: Colors.black,
+          icon: Icon(Icons.person),
+          label: 'Profile',
+        )
+      ],
+    );
   }
 }

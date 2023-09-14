@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:moviable/constants/colors.dart';
 import 'package:moviable/constants/keys.dart';
 import 'package:moviable/widgets/home_widgets/not_released_movies.dart';
 import 'package:moviable/widgets/home_widgets/toprated.dart';
@@ -27,7 +28,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   loadMovies() async {
-    TMDB tmdbWithCustomLogs = TMDB(ApiKeys(apiKey, readAccessToken),
+    TMDB tmdbWithCustomLogs = TMDB(ApiKeys(mainApiKey, mainReadAccessToken),
         logConfig: const ConfigLogger(showLogs: true, showErrorLogs: true));
     Map trendingResults = await tmdbWithCustomLogs.v3.trending.getTrending();
 
@@ -47,7 +48,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: secondaryColor,
       appBar: AppBar(
           centerTitle: true,
           backgroundColor: Colors.transparent,

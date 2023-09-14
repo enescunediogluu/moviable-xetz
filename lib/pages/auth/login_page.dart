@@ -80,7 +80,7 @@ class _LoginPageState extends State<LoginPage> {
                     gradient: LinearGradient(
                       colors: <Color>[
                         Colors.deepOrangeAccent,
-                        Colors.amber,
+                        primaryColor,
                       ],
                     ),
                   ),
@@ -88,7 +88,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               TextButton(
                 style: TextButton.styleFrom(
-                  foregroundColor: Colors.white,
+                  foregroundColor: sideColorWhite,
                 ),
                 onPressed: () async {
                   try {
@@ -131,7 +131,7 @@ class _LoginPageState extends State<LoginPage> {
             const Text(
               'Don\'t have an account?',
               style: TextStyle(
-                color: Colors.white,
+                color: sideColorWhite,
                 fontSize: 15,
               ),
             ),
@@ -184,11 +184,11 @@ class TextFieldItem extends StatelessWidget {
           keyboardType: keyboardType,
           enableSuggestions: false,
           obscureText: hideText,
-          cursorColor: Colors.amber,
+          cursorColor: primaryColor,
           decoration: InputDecoration(
             prefixIcon: prefixIcon,
             label: Text(label),
-            labelStyle: TextStyle(color: Colors.white.withOpacity(0.6)),
+            labelStyle: TextStyle(color: sideColorWhite.withOpacity(0.6)),
             focusedBorder: OutlineInputBorder(
               borderSide: BorderSide(
                   color: primaryColor.withOpacity(0.8),
@@ -197,12 +197,12 @@ class TextFieldItem extends StatelessWidget {
             ),
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                color: Colors.white.withOpacity(0.8),
+                color: sideColorWhite.withOpacity(0.8),
               ),
               borderRadius: BorderRadius.circular(15),
             ),
             hintStyle: TextStyle(
-              color: Colors.white.withOpacity(0.3),
+              color: sideColorWhite.withOpacity(0.3),
             ),
           ),
         ));
