@@ -1,9 +1,11 @@
 // ignore_for_file: prefer_interpolation_to_compose_strings, use_build_context_synchronously, prefer_final_fields
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:moviable/constants/colors.dart';
 import 'package:moviable/pages/extra/create_lists_page.dart';
 import 'package:moviable/pages/extra/custom_lists_content_page.dart';
+import 'package:moviable/pages/extra/search_in_lists_page.dart';
 import 'package:moviable/services/database_service.dart';
 import 'package:moviable/utils/text.dart';
 import 'package:moviable/pages/extra/favorites_list_view.dart';
@@ -17,7 +19,8 @@ class ListsPage extends StatefulWidget {
 }
 
 class _ListsPageState extends State<ListsPage> {
-  final DatabaseService database = DatabaseService();
+  final DatabaseService database =
+      DatabaseService(FirebaseAuth.instance.currentUser!.uid);
 
   List myLists = [];
   String listName = "";
@@ -105,15 +108,108 @@ class _ListsPageState extends State<ListsPage> {
                         children: [
                           GeneralListWidget(
                             lists: myLists,
-                            color: const Color(0xff222831),
-                            onLongPress: deleteLists,
+                            colors: const [
+                              Color(0xff252B48),
+                              Color(0xff445069),
+                            ],
+                            onLongPress: (id) {
+                              showModalBottomSheet(
+                                shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(25),
+                                        topRight: Radius.circular(25))),
+                                context: context,
+                                builder: (context) {
+                                  return Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 10, horizontal: 10),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Icon(
+                                              Icons.delete_forever,
+                                              size: 20,
+                                            ),
+                                            SizedBox(
+                                              width: 10,
+                                            ),
+                                            ModifiedText(
+                                                text: 'Delete',
+                                                color: Colors.white,
+                                                size: 30),
+                                          ],
+                                        ),
+                                        const ModifiedText(
+                                            text:
+                                                'Are you sure you want to remove it from watch list?',
+                                            color: Colors.white,
+                                            size: 15),
+                                        const SizedBox(
+                                          height: 15,
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            ElevatedButton(
+                                                style: ElevatedButton.styleFrom(
+                                                    backgroundColor:
+                                                        primaryColor,
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        15))),
+                                                onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                },
+                                                child: const ModifiedText(
+                                                    text: 'Cancel',
+                                                    color: secondaryColor,
+                                                    size: 15)),
+                                            const SizedBox(
+                                              width: 10,
+                                            ),
+                                            ElevatedButton(
+                                                style: ElevatedButton.styleFrom(
+                                                    backgroundColor:
+                                                        primaryColor,
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        15))),
+                                                onPressed: () {
+                                                  deleteLists(id);
+                                                },
+                                                child: const ModifiedText(
+                                                    text: 'Delete',
+                                                    color: secondaryColor,
+                                                    size: 15))
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              );
+                            },
                             onTap: (id) {
                               goToListPage(context, id);
                             },
                           ),
                           GeneralListWidget(
                             lists: myLists,
-                            color: const Color(0xff222831),
+                            colors: const [
+                              Color(0xff252B48),
+                              Color(0xff445069),
+                            ],
                             onLongPress: unfollowList,
                             onTap: (id) {
                               goToListPage(context, id);
@@ -208,26 +304,33 @@ class ListPageSearchbarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 40,
-      decoration: BoxDecoration(
-        color: Colors.grey,
-        borderRadius: BorderRadius.circular(25),
-      ),
-      child: Center(
-          child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.search,
-            color: secondaryColor.withOpacity(0.8),
-          ),
-          ModifiedText(
-              text: 'Search lists...',
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => const SearchInListsPage(),
+        ));
+      },
+      child: Container(
+        height: 40,
+        decoration: BoxDecoration(
+          color: Colors.grey,
+          borderRadius: BorderRadius.circular(25),
+        ),
+        child: Center(
+            child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.search,
               color: secondaryColor.withOpacity(0.8),
-              size: 15)
-        ],
-      )),
+            ),
+            ModifiedText(
+                text: 'Search lists...',
+                color: secondaryColor.withOpacity(0.8),
+                size: 15)
+          ],
+        )),
+      ),
     );
   }
 }
@@ -262,13 +365,13 @@ class GeneralListWidget extends StatelessWidget {
   const GeneralListWidget({
     super.key,
     required this.lists,
-    required this.color,
+    required this.colors,
     required this.onLongPress,
     required this.onTap,
   });
 
   final List lists;
-  final Color color;
+  final List<Color> colors;
   final Function(String id) onLongPress;
   final void Function(String id) onTap;
 
@@ -290,12 +393,10 @@ class GeneralListWidget extends StatelessWidget {
             child: Container(
               margin: const EdgeInsets.only(bottom: 8),
               decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [
-                      Color(0xff252B48),
-                      Color(0xff445069),
-                    ],
-                  ),
+                  gradient: LinearGradient(
+                      colors: colors,
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight),
                   borderRadius: BorderRadius.circular(15)),
               child: Row(children: [
                 Container(

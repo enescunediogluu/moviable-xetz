@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:moviable/services/auth_user.dart';
 import 'package:moviable/services/database_service.dart';
@@ -32,6 +31,13 @@ class AuthService {
     }
   }
 
+  getCurrentUid() {
+    final currentUser = firebaseAuth.currentUser;
+    if (currentUser != null) {
+      return currentUser.uid;
+    }
+  }
+
   AuthUser? get currentUser {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
@@ -53,7 +59,8 @@ class AuthService {
           .user!;
 
       // call our database service to update the user data.
-      await DatabaseService().savingUserData(username, email, profilePic);
+      await DatabaseService(FirebaseAuth.instance.currentUser!.uid)
+          .savingUserData(username, email, profilePic);
     } on FirebaseAuthException catch (e) {
       return e.message;
     }

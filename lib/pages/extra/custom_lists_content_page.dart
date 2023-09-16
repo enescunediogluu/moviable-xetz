@@ -2,6 +2,7 @@
 
 import 'dart:developer';
 import 'dart:ui';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:moviable/constants/colors.dart';
 import 'package:moviable/pages/extra/description.dart';
@@ -21,10 +22,13 @@ class CustomListsContentPage extends StatefulWidget {
 }
 
 class _CustomListsContentPageState extends State<CustomListsContentPage> {
-  final CustomListService customListService = CustomListService();
+  final CustomListService customListService =
+      CustomListService(FirebaseAuth.instance.currentUser!.uid);
   String listName = "";
   String listIcon = "";
   String adminId = "";
+  String listDescription = "";
+  bool private = true;
   List followers = [];
   List contents = [];
   List<bool> isSelectedList = [];
@@ -40,6 +44,8 @@ class _CustomListsContentPageState extends State<CustomListsContentPage> {
         followers = info['followers'];
         contents = info['content'];
         isSelectedList = List.generate(contents.length, (index) => false);
+        private = info['private'];
+        listDescription = info['listDescription'];
       });
     }
   }
@@ -134,8 +140,8 @@ class _CustomListsContentPageState extends State<CustomListsContentPage> {
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(5),
                 border: Border.all(color: primaryColor)),
-            child: const ModifiedText(
-              text: 'Public',
+            child: ModifiedText(
+              text: private ? 'Private' : 'Public',
               color: Colors.white,
               size: 10,
               fontWeight: FontWeight.w300,
@@ -163,7 +169,7 @@ class _CustomListsContentPageState extends State<CustomListsContentPage> {
           SizedBox(
             width: MediaQuery.of(context).size.width * 0.6,
             child: HeaderText(
-              text: "They find you amusing for a while, people of this city...",
+              text: listDescription,
               color: Colors.white.withOpacity(0.6),
               size: 12,
             ),
@@ -392,7 +398,7 @@ class ListInfoDisplayers extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
             ModifiedText(
-              text: 'Followed',
+              text: 'Followers',
               color: Colors.white,
               size: 15,
               fontWeight: FontWeight.normal,

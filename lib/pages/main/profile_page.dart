@@ -15,7 +15,8 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final AuthService authService = AuthService();
-  final DatabaseService database = DatabaseService();
+  final DatabaseService database =
+      DatabaseService(FirebaseAuth.instance.currentUser!.uid);
 
   @override
   void initState() {

@@ -1,14 +1,13 @@
 import 'dart:developer';
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 
 class DatabaseService {
-  final uid = FirebaseAuth.instance.currentUser!.uid;
-
+  final String uid;
+  DatabaseService(this.uid);
   String imageUrl = "";
   User? user = FirebaseAuth.instance.currentUser;
 
@@ -94,6 +93,7 @@ class DatabaseService {
     String posterUrl,
     String vote,
     String launchOn,
+    bool isItMovie,
   ) async {
     DocumentReference docRef = userCollection.doc(uid);
     final flag = await checkIfAlreadyLiked(movieId);
@@ -107,7 +107,8 @@ class DatabaseService {
             'bannerUrl': bannerUrl,
             'posterUrl': posterUrl,
             'vote': vote,
-            'launchOn': launchOn
+            'launchOn': launchOn,
+            'isItMovie': isItMovie,
           }
         ])
       });
@@ -183,6 +184,7 @@ class DatabaseService {
     String posterUrl,
     String vote,
     String launchOn,
+    bool isItMovie,
   ) async {
     DocumentReference docRef = userCollection.doc(uid);
     final flag = await checkIfAlreadyOnWatchList(movieId);
@@ -196,7 +198,8 @@ class DatabaseService {
             'bannerUrl': bannerUrl,
             'posterUrl': posterUrl,
             'vote': vote,
-            'launchOn': launchOn
+            'launchOn': launchOn,
+            'isItMovie': isItMovie
           }
         ])
       });
@@ -264,9 +267,23 @@ class DatabaseService {
     }
   }
 
+  List<String> generatePartialSearchTerms(String fullName) {
+    List<String> partialSearchTerms = [];
+    String searchTerm = '';
+
+    for (int i = 0; i < fullName.length; i++) {
+      searchTerm += fullName[i];
+      partialSearchTerms.add(searchTerm);
+    }
+
+    return partialSearchTerms;
+  }
+
   //creating custom lists
-  Future<void> createList(
-      String username, String listName, String profilePic, bool private) async {
+  Future<void> createList(String username, String listName, String profilePic,
+      bool private, String listDescription) async {
+    final lowercaseName = listName.toLowerCase();
+    final keywords = generatePartialSearchTerms(lowercaseName);
     DocumentReference docRef = await listsCollection.add({
       "adminId": uid,
       "listName": listName,
@@ -274,7 +291,9 @@ class DatabaseService {
       "listId": "",
       "content": [],
       "followers": [],
-      "private": private
+      "private": private,
+      "listDescription": listDescription,
+      "keywords": keywords
     });
 
     await docRef.update({
@@ -284,6 +303,14 @@ class DatabaseService {
     await userRef.update({
       "createdLists": FieldValue.arrayUnion([docRef.id])
     });
+  }
+
+  Future getListSearchResults(String searchText) async {
+    Stream results = listsCollection
+        .where('private', isEqualTo: false)
+        .where('keywords', arrayContains: searchText)
+        .snapshots();
+    return results;
   }
 
   //gett the created lists buy user
@@ -332,6 +359,8 @@ class DatabaseService {
 }
 
 class CustomListService extends DatabaseService {
+  CustomListService(super.uid);
+
   //checking before if user has already added this movie to their lists
   Future<bool> checkIfAlreadyOnTheList(String listId, int movieId) async {
     try {

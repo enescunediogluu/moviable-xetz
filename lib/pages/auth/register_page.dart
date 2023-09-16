@@ -7,7 +7,6 @@ import 'package:moviable/constants/colors.dart';
 import 'package:moviable/pages/auth/login_page.dart';
 import 'package:moviable/pages/auth/verify_email_page.dart';
 import 'package:moviable/services/auth_service.dart';
-import 'package:moviable/services/database_service.dart';
 import 'package:moviable/utils/text.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -22,7 +21,8 @@ class _RegisterPageState extends State<RegisterPage> {
   late final TextEditingController _password;
   late final TextEditingController _username;
   final AuthService authService = AuthService();
-  final DatabaseService database = DatabaseService();
+
+  String profilePic = "";
 
   @override
   void initState() {
@@ -42,7 +42,6 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
-    String profilePic = "";
     return Scaffold(
       body: SingleChildScrollView(
           child: Column(children: [

@@ -2,8 +2,10 @@
 
 import 'dart:ui';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:moviable/constants/colors.dart';
+import 'package:moviable/pages/extra/description.dart';
 import 'package:moviable/pages/main/navbar_trial.dart';
 import 'package:moviable/services/database_service.dart';
 import 'package:moviable/utils/text.dart';
@@ -17,7 +19,8 @@ class FavoritesListView extends StatefulWidget {
 
 class _FavoritesListViewState extends State<FavoritesListView> {
   List favorites = [];
-  final DatabaseService database = DatabaseService();
+  final DatabaseService database =
+      DatabaseService(FirebaseAuth.instance.currentUser!.uid);
   List<bool> isSelectedList = [];
 
   void getFavouritesFromFirebase() async {
@@ -114,10 +117,28 @@ class _FavoritesListViewState extends State<FavoritesListView> {
                     itemBuilder: (context, index) {
                       final movieDetails = favorites[index];
                       final String title = movieDetails['name'];
-                      final String posterPath = movieDetails['posterUrl'];
+                      final String posterUrl = movieDetails['posterUrl'];
+                      final String bannerUrl = movieDetails['bannerUrl'];
                       final int id = movieDetails['id'];
+                      final String description = movieDetails['description'];
+                      final bool isItMovie = movieDetails['isItMovie'];
+                      final String vote = movieDetails['vote'];
+                      final String launchOn = movieDetails['launchOn'];
 
                       return GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => Description(
+                                name: title,
+                                description: description,
+                                bannerUrl: bannerUrl,
+                                posterUrl: posterUrl,
+                                vote: vote,
+                                launchOn: launchOn,
+                                id: id,
+                                isItMovie: isItMovie),
+                          ));
+                        },
                         onLongPress: () {
                           setState(() {
                             isSelectedList[index] = !isSelectedList[index];
@@ -136,7 +157,7 @@ class _FavoritesListViewState extends State<FavoritesListView> {
                                       borderRadius: BorderRadius.circular(15),
                                       image: DecorationImage(
                                         image: NetworkImage(
-                                            'https://image.tmdb.org/t/p/w500/$posterPath'),
+                                            'https://image.tmdb.org/t/p/w500/$posterUrl'),
                                         fit: BoxFit.cover,
                                       ),
                                     ),

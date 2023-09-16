@@ -2,6 +2,7 @@
 
 import 'dart:developer';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:moviable/constants/colors.dart';
 import 'package:moviable/constants/keys.dart';
@@ -42,8 +43,10 @@ class _DescriptionState extends State<Description> {
   bool isItInWatchList = false;
   List myCreatedLists = [];
 
-  final DatabaseService database = DatabaseService();
-  final CustomListService customListService = CustomListService();
+  final DatabaseService database =
+      DatabaseService(FirebaseAuth.instance.currentUser!.uid);
+  final CustomListService customListService =
+      CustomListService(FirebaseAuth.instance.currentUser!.uid);
 
   @override
   void initState() {
@@ -115,67 +118,78 @@ class _DescriptionState extends State<Description> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: ListView(
-        physics: const BouncingScrollPhysics(),
+      body: Stack(
         children: [
-          SizedBox(
-            height: 250,
-            child: Stack(
-              children: [
-                (widget.bannerUrl != 'null')
-                    ? BannerImageWidget(widget: widget)
-                    : const ImagePlaceholderWidget(),
-              ],
-            ),
-          ),
-          const SizedBox(
-            height: 15,
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TitleTextWidget(widget: widget),
-                RatingContainerWidget()
-              ],
-            ),
-          ),
-          const SizedBox(
-            height: 25,
-          ),
-          DescriptionTextWidget(
-            widget: widget,
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+          ListView(
+            physics: const BouncingScrollPhysics(),
             children: [
-              FavoritesButton(),
-              const SizedBox(
-                width: 10,
+              SizedBox(
+                height: 250,
+                child: Stack(
+                  children: [
+                    (widget.bannerUrl != 'null')
+                        ? BannerImageWidget(widget: widget)
+                        : const ImagePlaceholderWidget(),
+                  ],
+                ),
               ),
               const SizedBox(
-                width: 20,
+                height: 15,
               ),
-              WatchLaterButton(),
-              AddToPlaylistButton(
-                customList: myCreatedLists,
-                movieName: widget.name,
-                movieId: widget.id,
-                isItMovie: widget.isItMovie,
-                posterUrl: widget.posterUrl,
-                bannerUrl: widget.bannerUrl,
-                launchOn: widget.launchOn,
-                vote: widget.vote,
-                description: widget.description,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TitleTextWidget(widget: widget),
+                    RatingContainerWidget()
+                  ],
+                ),
               ),
+              const SizedBox(
+                height: 25,
+              ),
+              DescriptionTextWidget(
+                widget: widget,
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  FavoritesButton(),
+                  const SizedBox(
+                    width: 30,
+                  ),
+                  WatchLaterButton(),
+                  AddToPlaylistButton(
+                    customList: myCreatedLists,
+                    movieName: widget.name,
+                    movieId: widget.id,
+                    isItMovie: widget.isItMovie,
+                    posterUrl: widget.posterUrl,
+                    bannerUrl: widget.bannerUrl,
+                    launchOn: widget.launchOn,
+                    vote: widget.vote,
+                    description: widget.description,
+                  ),
+                ],
+              ),
+              CastList(castList: casts),
+              SimilarMovies(similar: similar),
             ],
           ),
-          CastList(castList: casts),
-          SimilarMovies(similar: similar),
+          Positioned(
+              top: 35,
+              child: IconButton(
+                icon: const Icon(
+                  Icons.arrow_back_ios,
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ))
         ],
       ),
     );
@@ -191,7 +205,8 @@ class _DescriptionState extends State<Description> {
               widget.bannerUrl,
               widget.posterUrl,
               widget.vote,
-              widget.launchOn);
+              widget.launchOn,
+              widget.isItMovie);
 
           setState(() {
             isItInFavorites = !isItInFavorites;
@@ -242,6 +257,7 @@ class _DescriptionState extends State<Description> {
           widget.posterUrl,
           widget.vote,
           widget.launchOn,
+          widget.isItMovie,
         );
 
         setState(() {
@@ -316,8 +332,10 @@ class AddToPlaylistButton extends StatefulWidget {
 }
 
 class _AddToPlaylistButtonState extends State<AddToPlaylistButton> {
-  final DatabaseService database = DatabaseService();
-  final CustomListService customListService = CustomListService();
+  final DatabaseService database =
+      DatabaseService(FirebaseAuth.instance.currentUser!.uid);
+  final CustomListService customListService =
+      CustomListService(FirebaseAuth.instance.currentUser!.uid);
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -362,7 +380,11 @@ class _AddToPlaylistButtonState extends State<AddToPlaylistButton> {
                             const EdgeInsets.only(top: 20, right: 20, left: 20),
                         child: GeneralListWidget(
                           lists: widget.customList,
-                          color: Colors.white,
+                          colors: const [
+                            Color(0xff393646),
+                            Color(0xff4F4557),
+                            Color(0xff9DB2BF)
+                          ],
                           onTap: (id) async {
                             final message =
                                 await customListService.addMoviesToCustomLists(
