@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:moviable/constants/colors.dart';
+import 'package:moviable/pages/extra/custom_lists_content_page.dart';
 import 'package:moviable/services/database_service.dart';
 import 'package:moviable/utils/text.dart';
 
@@ -90,52 +91,63 @@ class _SearchInListsPageState extends State<SearchInListsPage> {
                   );
                 } else {
                   return ListView.builder(
+                    keyboardDismissBehavior:
+                        ScrollViewKeyboardDismissBehavior.onDrag,
                     shrinkWrap: true,
                     itemCount: snapshot.data!.docs.length,
                     itemBuilder: (context, index) {
                       final document = snapshot.data!.docs[index];
                       final listName = document['listName'];
                       final listIcon = document['listIcon'];
+                      final listId = document['listId'];
 
-                      return Container(
-                        margin: const EdgeInsets.symmetric(
-                            vertical: 5, horizontal: 15),
-                        decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: [
-                                  Color(0xff252B48),
-                                  Color(0xff445069),
-                                ]),
-                            borderRadius: BorderRadius.circular(15)),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 60,
-                              height: 60,
-                              decoration: BoxDecoration(
-                                borderRadius: const BorderRadius.horizontal(
-                                    left: Radius.circular(15)),
-                                image: DecorationImage(
-                                    image: NetworkImage((listIcon != "")
-                                        ? listIcon
-                                        : 'https://i.pinimg.com/564x/c1/ae/86/c1ae864b0ea941be0362c6d45fad10af.jpg'),
-                                    fit: BoxFit.cover),
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) =>
+                                CustomListsContentPage(listId: listId),
+                          ));
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(
+                              vertical: 5, horizontal: 15),
+                          decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [
+                                    Color(0xff252B48),
+                                    Color(0xff445069),
+                                  ]),
+                              borderRadius: BorderRadius.circular(15)),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 60,
+                                height: 60,
+                                decoration: BoxDecoration(
+                                  borderRadius: const BorderRadius.horizontal(
+                                      left: Radius.circular(15)),
+                                  image: DecorationImage(
+                                      image: NetworkImage((listIcon != "")
+                                          ? listIcon
+                                          : 'https://i.pinimg.com/564x/c1/ae/86/c1ae864b0ea941be0362c6d45fad10af.jpg'),
+                                      fit: BoxFit.cover),
+                                ),
                               ),
-                            ),
-                            const SizedBox(
-                              width: 20,
-                            ),
-                            SizedBox(
-                              width: 200,
-                              child: HeaderText(
-                                text: listName,
-                                color: Colors.white,
-                                size: 18,
+                              const SizedBox(
+                                width: 20,
                               ),
-                            ),
-                          ],
+                              SizedBox(
+                                width: 200,
+                                child: HeaderText(
+                                  text: listName,
+                                  color: Colors.white,
+                                  size: 18,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       );
                     },

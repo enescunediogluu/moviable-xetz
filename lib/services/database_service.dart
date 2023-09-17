@@ -356,6 +356,23 @@ class DatabaseService {
       log('error while trying to delete the list');
     }
   }
+
+  //gett the followed lists buy user
+  Future<List> getFollowedLists() async {
+    DocumentSnapshot snapshot = await userCollection.doc(uid).get();
+    if (snapshot.exists) {
+      List followedListIds = snapshot.get('followedLists');
+      List followedLists = [];
+      for (var id in followedListIds) {
+        DocumentSnapshot movieInfo = await listsCollection.doc(id).get();
+        followedLists.add(movieInfo);
+      }
+      log(followedLists.length.toString());
+      return followedLists;
+    } else {
+      return [];
+    }
+  }
 }
 
 class CustomListService extends DatabaseService {
@@ -452,6 +469,73 @@ class CustomListService extends DatabaseService {
       return snapshot;
     } else {
       return null;
+    }
+  }
+
+  Future<bool> checkIfUserFollowsTheList(
+      String currentUserId, String listId) async {
+    DocumentSnapshot snapshot = await listsCollection.doc(listId).get();
+    if (snapshot.exists && snapshot['followers'] != null) {
+      List followers = snapshot['followers'];
+      log('currentUser $currentUserId');
+      log('list$followers');
+      if (followers.contains(currentUserId)) {
+        log('database: true');
+        return true;
+      } else {
+        log('database: false');
+        return false;
+      }
+    } else {
+      log('database second if: false');
+
+      return false;
+    }
+  }
+
+  Future handleTheFollowOrUnfollowProcess(
+      String currentUserId, String listId) async {
+    DocumentReference docRef = listsCollection.doc(listId);
+    DocumentReference userDocRef = userCollection.doc(currentUserId);
+    DocumentSnapshot userSnapshot = await userDocRef.get();
+    DocumentSnapshot snapshot = await docRef.get();
+
+    if (snapshot.exists && snapshot['followers'] != null) {
+      List followers = snapshot['followers'];
+      List followedLists = userSnapshot['followedLists'];
+      if (followers.contains(currentUserId)) {
+        final updatedFollowersList = [];
+        for (var value in followers) {
+          if (value != currentUserId) {
+            updatedFollowersList.add(value);
+          }
+        }
+        await deleteFollowingListIdFromUser(currentUserId, listId);
+        await docRef.update({'followers': updatedFollowersList});
+      } else {
+        List updatedFollowedLists = followedLists;
+        List updatedList = followers;
+        updatedList.add(currentUserId);
+        updatedFollowedLists.add(listId);
+        await docRef.update({'followers': updatedList});
+        await userDocRef.update({'followedLists': updatedFollowedLists});
+      }
+    }
+  }
+
+  Future deleteFollowingListIdFromUser(String userId, String listId) async {
+    DocumentReference docRef = userCollection.doc(userId);
+    DocumentSnapshot snapshot = await docRef.get();
+
+    if (snapshot.exists && snapshot['followedLists'] != null) {
+      final followedListIds = snapshot['followedLists'];
+      List updatedList = [];
+      for (var id in followedListIds) {
+        if (id != listId) {
+          updatedList.add(id);
+        }
+      }
+      docRef.update({'followedLists': updatedList});
     }
   }
 }

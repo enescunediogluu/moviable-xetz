@@ -1,11 +1,11 @@
 // ignore_for_file: prefer_interpolation_to_compose_strings, use_build_context_synchronously, prefer_final_fields
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:moviable/constants/colors.dart';
 import 'package:moviable/pages/extra/create_lists_page.dart';
 import 'package:moviable/pages/extra/custom_lists_content_page.dart';
 import 'package:moviable/pages/extra/search_in_lists_page.dart';
+import 'package:moviable/services/auth_service.dart';
 import 'package:moviable/services/database_service.dart';
 import 'package:moviable/utils/text.dart';
 import 'package:moviable/pages/extra/favorites_list_view.dart';
@@ -20,10 +20,19 @@ class ListsPage extends StatefulWidget {
 
 class _ListsPageState extends State<ListsPage> {
   final DatabaseService database =
-      DatabaseService(FirebaseAuth.instance.currentUser!.uid);
+      DatabaseService(AuthService().currentUser!.id);
 
   List myLists = [];
+  List followedLists = [];
   String listName = "";
+
+  getFollowedListsFromFirebase() async {
+    final temp = await database.getFollowedLists();
+
+    setState(() {
+      followedLists = temp;
+    });
+  }
 
   getCreatedListsFromFirebase() async {
     final temp = await database.getCreatedLists();
@@ -32,8 +41,8 @@ class _ListsPageState extends State<ListsPage> {
     });
   }
 
-  deleteLists(String listId) {
-    database.deleteListsFromCreatedLists(listId);
+  deleteLists(String listId) async {
+    await database.deleteListsFromCreatedLists(listId);
     setState(() {
       myLists.removeWhere((list) => list['listId'] == listId);
       //try to understand this code part
@@ -44,6 +53,7 @@ class _ListsPageState extends State<ListsPage> {
   void initState() {
     super.initState();
     getCreatedListsFromFirebase();
+    getFollowedListsFromFirebase();
   }
 
   @override
@@ -187,6 +197,7 @@ class _ListsPageState extends State<ListsPage> {
                                                                         15))),
                                                 onPressed: () {
                                                   deleteLists(id);
+                                                  Navigator.of(context).pop();
                                                 },
                                                 child: const ModifiedText(
                                                     text: 'Delete',
@@ -205,7 +216,7 @@ class _ListsPageState extends State<ListsPage> {
                             },
                           ),
                           GeneralListWidget(
-                            lists: myLists,
+                            lists: followedLists,
                             colors: const [
                               Color(0xff252B48),
                               Color(0xff445069),

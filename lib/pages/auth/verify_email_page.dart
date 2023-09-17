@@ -42,7 +42,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
               padding: const EdgeInsets.symmetric(horizontal: 30),
               child: ModifiedText(
                 text:
-                    'We have sent you a verification email.\nPlease click the link on the email to join the party!',
+                    'We will send you a verification email.\nPlease click the link on the email to join the party!',
                 color: Colors.white.withOpacity(0.6),
                 size: 18,
               ),
@@ -73,7 +73,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                         width: 10,
                       ),
                       Text(
-                        'Send Again',
+                        'Send',
                         style: TextStyle(
                           fontSize: 25,
                           color: Colors.black,
