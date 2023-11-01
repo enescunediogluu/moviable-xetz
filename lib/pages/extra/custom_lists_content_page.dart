@@ -5,6 +5,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:moviable/constants/colors.dart';
 import 'package:moviable/pages/extra/description.dart';
+import 'package:moviable/pages/extra/list_settings_page.dart';
 import 'package:moviable/services/auth_service.dart';
 import 'package:moviable/services/database_service.dart';
 import 'package:moviable/utils/text.dart';
@@ -178,7 +179,17 @@ class _CustomListsContentPageState extends State<CustomListsContentPage> {
                         ? ElevatedButton(
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: sideColorWhite),
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => ListSettingsPage(
+                                  listId: widget.listId,
+                                  listName: listName,
+                                  listIcon: listIcon,
+                                  description: listDescription,
+                                  private: private,
+                                ),
+                              ));
+                            },
                             child: const Row(
                               children: [
                                 Icon(

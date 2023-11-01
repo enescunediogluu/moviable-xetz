@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:moviable/constants/colors.dart';
-import 'package:moviable/constants/keys.dart';
+import 'package:moviable/pages/main/helpers/provider_service.dart';
 import 'package:moviable/widgets/home_widgets/not_released_movies.dart';
 import 'package:moviable/widgets/home_widgets/toprated.dart';
 import 'package:moviable/widgets/home_widgets/trending.dart';
 import 'package:moviable/widgets/home_widgets/tv_shows.dart';
-import 'package:tmdb_api/tmdb_api.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -23,30 +23,25 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    loadMovies();
+    final movieProvider = Provider.of<MovieProvider>(context, listen: false);
+
+    if (movieProvider.movieData.isEmpty) {
+      // Fetch data only if it hasn't been fetched before
+      movieProvider.loadMovies();
+    }
     super.initState();
-  }
-
-  loadMovies() async {
-    TMDB tmdbWithCustomLogs = TMDB(ApiKeys(mainApiKey, mainReadAccessToken),
-        logConfig: const ConfigLogger(showLogs: true, showErrorLogs: true));
-    Map trendingResults = await tmdbWithCustomLogs.v3.trending.getTrending();
-
-    Map topRatedMoviesResults =
-        await tmdbWithCustomLogs.v3.movies.getTopRated();
-    Map tvShowResults = await tmdbWithCustomLogs.v3.tv.getTopRated();
-    Map moviesComingSoon = await tmdbWithCustomLogs.v3.movies.getUpcoming();
-
-    setState(() {
-      trendingMovies = trendingResults['results'];
-      topRatedMovies = topRatedMoviesResults['results'];
-      popularTvShows = tvShowResults['results'];
-      moviesNotReleased = moviesComingSoon['results'];
-    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final movieProvider = Provider.of<MovieProvider>(context);
+
+    // Access data using movieProvider.movieData
+    final trendingMovies = movieProvider.movieData['trendingMovies'];
+    final topRatedMovies = movieProvider.movieData['topRatedMovies'];
+    final popularTvShows = movieProvider.movieData['popularTvShows'];
+    final moviesNotReleased = movieProvider.movieData['moviesNotReleased'];
+
     return Scaffold(
       backgroundColor: secondaryColor,
       appBar: AppBar(
@@ -60,10 +55,14 @@ class _HomePageState extends State<HomePage> {
           const SizedBox(
             height: 20,
           ),
-          TrendingMovies(trending: trendingMovies),
-          TopRated(topRated: topRatedMovies),
-          TvShows(tvShows: popularTvShows),
-          NotReleasedMovies(notReleased: moviesNotReleased),
+          if (trendingMovies != null && trendingMovies.isNotEmpty)
+            TrendingMovies(trending: trendingMovies),
+          if (topRatedMovies != null && topRatedMovies.isNotEmpty)
+            TopRated(topRated: topRatedMovies),
+          if (popularTvShows != null && popularTvShows.isNotEmpty)
+            TvShows(tvShows: popularTvShows),
+          if (moviesNotReleased != null && moviesNotReleased.isNotEmpty)
+            NotReleasedMovies(notReleased: moviesNotReleased),
         ],
       ),
     );
