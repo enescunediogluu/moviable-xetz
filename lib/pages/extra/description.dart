@@ -38,6 +38,7 @@ class _DescriptionState extends State<Description> {
   List casts = [];
   List similar = [];
   List genres = [];
+  bool isLoading = true;
 
   bool isItInFavorites = false;
   bool isItInWatchList = false;
@@ -60,7 +61,7 @@ class _DescriptionState extends State<Description> {
     final temp = await database.getCreatedLists();
     setState(() {
       myCreatedLists = temp;
-      log(myCreatedLists.toString());
+      isLoading = false;
     });
   }
 
@@ -118,80 +119,89 @@ class _DescriptionState extends State<Description> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: Stack(
-        children: [
-          ListView(
-            physics: const BouncingScrollPhysics(),
-            children: [
-              SizedBox(
-                height: 250,
-                child: Stack(
+      body: isLoading
+          ? Center(
+              child: SizedBox(
+                  width: 35,
+                  height: 35,
+                  child: Image.asset(
+                    "assets/loading_circle2.png",
+                    fit: BoxFit.cover,
+                  )))
+          : Stack(
+              children: [
+                ListView(
+                  physics: const BouncingScrollPhysics(),
                   children: [
-                    (widget.bannerUrl != 'null')
-                        ? BannerImageWidget(widget: widget)
-                        : const ImagePlaceholderWidget(),
+                    SizedBox(
+                      height: 250,
+                      child: Stack(
+                        children: [
+                          (widget.bannerUrl != 'null')
+                              ? BannerImageWidget(widget: widget)
+                              : const ImagePlaceholderWidget(),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          TitleTextWidget(widget: widget),
+                          RatingContainerWidget()
+                        ],
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 25,
+                    ),
+                    DescriptionTextWidget(
+                      widget: widget,
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        FavoritesButton(),
+                        const SizedBox(
+                          width: 30,
+                        ),
+                        WatchLaterButton(),
+                        AddToPlaylistButton(
+                          customList: myCreatedLists,
+                          movieName: widget.name,
+                          movieId: widget.id,
+                          isItMovie: widget.isItMovie,
+                          posterUrl: widget.posterUrl,
+                          bannerUrl: widget.bannerUrl,
+                          launchOn: widget.launchOn,
+                          vote: widget.vote,
+                          description: widget.description,
+                        ),
+                      ],
+                    ),
+                    CastList(castList: casts),
+                    SimilarMovies(similar: similar),
                   ],
                 ),
-              ),
-              const SizedBox(
-                height: 15,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    TitleTextWidget(widget: widget),
-                    RatingContainerWidget()
-                  ],
-                ),
-              ),
-              const SizedBox(
-                height: 25,
-              ),
-              DescriptionTextWidget(
-                widget: widget,
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  FavoritesButton(),
-                  const SizedBox(
-                    width: 30,
-                  ),
-                  WatchLaterButton(),
-                  AddToPlaylistButton(
-                    customList: myCreatedLists,
-                    movieName: widget.name,
-                    movieId: widget.id,
-                    isItMovie: widget.isItMovie,
-                    posterUrl: widget.posterUrl,
-                    bannerUrl: widget.bannerUrl,
-                    launchOn: widget.launchOn,
-                    vote: widget.vote,
-                    description: widget.description,
-                  ),
-                ],
-              ),
-              CastList(castList: casts),
-              SimilarMovies(similar: similar),
-            ],
-          ),
-          Positioned(
-              top: 35,
-              child: IconButton(
-                icon: const Icon(
-                  Icons.arrow_back_ios,
-                ),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ))
-        ],
-      ),
+                Positioned(
+                    top: 35,
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.arrow_back_ios,
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ))
+              ],
+            ),
     );
   }
 

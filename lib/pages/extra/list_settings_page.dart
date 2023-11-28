@@ -7,7 +7,7 @@ import 'package:moviable/utils/text.dart';
 class ListSettingsPage extends StatefulWidget {
   final String listId;
   final String listName;
-  final String listIcon;
+  final String? listIcon;
   final String description;
   final bool private;
   const ListSettingsPage({
@@ -39,7 +39,7 @@ class _ListSettingsPageState extends State<ListSettingsPage> {
     _nameController.text = widget.listName;
     _descriptionController.text = widget.description;
 
-    profilePic = widget.listIcon;
+    profilePic = widget.listIcon!;
 
     super.initState();
   }

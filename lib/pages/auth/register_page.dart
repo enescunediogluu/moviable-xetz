@@ -43,12 +43,33 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: secondaryColor,
       body: SingleChildScrollView(
           child: Column(children: [
         const SizedBox(
           height: 100,
         ),
-        const HeaderText(text: 'Sign In', color: Colors.white, size: 50),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 30),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              const HeaderText(
+                text: 'Register',
+                color: sideColorWhite,
+                size: 40,
+                fontWeight: FontWeight.w500,
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              ModifiedText(
+                  text: "Create an account and join the party!",
+                  color: sideColorWhite.withOpacity(0.4),
+                  size: 15)
+            ],
+          ),
+        ),
         const SizedBox(
           height: 20,
         ),
@@ -82,7 +103,7 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
         TextFieldItem(
           controller: _password,
-          hideText: false,
+          hideText: true,
           isItEmail: false,
           prefixIcon: const Icon(Icons.key, color: Colors.amber),
           label: 'Password',
@@ -146,28 +167,23 @@ class _RegisterPageState extends State<RegisterPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
-              'If you have an account',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 15,
-              ),
-            ),
+            const ModifiedText(
+                text: "If you already have an account",
+                color: sideColorWhite,
+                size: 13),
             TextButton(
-              style: TextButton.styleFrom(),
-              onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => const LoginPage(),
-                ));
-              },
-              child: const Text(
-                'Login now',
-                style: TextStyle(
+                style: TextButton.styleFrom(),
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const LoginPage(),
+                  ));
+                },
+                child: const ModifiedText(
+                  text: "Login",
                   color: primaryColor,
-                  fontSize: 18,
-                ),
-              ),
-            ),
+                  size: 15,
+                  fontWeight: FontWeight.w600,
+                )),
           ],
         ),
       ])),

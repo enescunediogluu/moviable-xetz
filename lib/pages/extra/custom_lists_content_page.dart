@@ -1,6 +1,5 @@
 // ignore_for_file: use_build_context_synchronously, non_constant_identifier_names
 
-import 'dart:developer';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:moviable/constants/colors.dart';
@@ -27,6 +26,7 @@ class _CustomListsContentPageState extends State<CustomListsContentPage> {
 
   final CustomListService customListService =
       CustomListService(AuthService().currentUser!.id);
+
   String currentUserId = "";
   String listName = "";
   String listIcon = "";
@@ -38,6 +38,7 @@ class _CustomListsContentPageState extends State<CustomListsContentPage> {
   List<bool> isSelectedList = [];
   bool isUserAdmin = false;
   bool isUserFollowingTheList = false;
+  bool isLoading = true;
 
   getCurrentUser() async {
     final temp = authService.currentUser!.id;
@@ -46,13 +47,11 @@ class _CustomListsContentPageState extends State<CustomListsContentPage> {
     });
   }
 
-  getListInfoFromDatabase() async {
+  Future<void> getListInfoFromDatabase() async {
     final info = await customListService.getListDataFromDatabase(widget.listId);
     final value = await customListService.checkIfUserFollowsTheList(
         currentUserId, widget.listId);
     if (info != null) {
-      log('snapshot is not null');
-
       setState(() {
         listName = info['listName'];
         listIcon = info['listIcon'];
@@ -65,6 +64,7 @@ class _CustomListsContentPageState extends State<CustomListsContentPage> {
 
         isUserAdmin = info['adminId'] == currentUserId;
         isUserFollowingTheList = value;
+        isLoading = false;
       });
     }
   }
@@ -73,7 +73,6 @@ class _CustomListsContentPageState extends State<CustomListsContentPage> {
   void initState() {
     getCurrentUser();
     getListInfoFromDatabase();
-
     super.initState();
   }
 
@@ -81,184 +80,191 @@ class _CustomListsContentPageState extends State<CustomListsContentPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: SingleChildScrollView(
-        child: Stack(
-          children: [
-            Column(
-              children: [
-                ClipRRect(
-                  child: Stack(
+      body: isLoading
+          ? Center(
+              child: SizedBox(
+                  width: 35, child: Image.asset("assets/loading_circle3.png")),
+            )
+          : SingleChildScrollView(
+              child: Stack(
+                children: [
+                  Column(
                     children: [
-                      Column(
-                        children: [
-                          Container(
-                            height: 90,
-                            width: MediaQuery.of(context).size.width,
-                            decoration: BoxDecoration(
-                                image: (listIcon != "")
-                                    ? DecorationImage(
-                                        image: NetworkImage(listIcon),
-                                        fit: BoxFit.cover,
-                                      )
-                                    : const DecorationImage(
-                                        image: AssetImage(
-                                            'assets/watch_later_icon.png'),
-                                        fit: BoxFit.cover)),
-                          ),
-                          Container(
-                            color: secondaryColor,
-                            height: 90,
-                          )
-                        ],
-                      ),
-                      Positioned(
-                        top: 65,
-                        left: 20,
-
-                        // Adjust the left position as needed
-                        child: BackdropFilter(
-                          filter: ImageFilter.blur(
-                            sigmaX: 40,
-                            sigmaY: 40,
-                          ),
-                          child: HeaderDisplayWidget(context),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Row(
-                  children: [
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.6,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Column(
-                            children: [
-                              ModifiedText(
-                                text: followers.length.toString(),
-                                color: Colors.white,
-                                size: 15,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              const ModifiedText(
-                                text: 'Followers',
-                                color: Colors.white,
-                                size: 15,
-                                fontWeight: FontWeight.normal,
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            width: 20,
-                          ),
-                          Column(
-                            children: [
-                              ModifiedText(
-                                text: contents.length.toString(),
-                                color: Colors.white,
-                                size: 15,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              const ModifiedText(
-                                text: 'Content',
-                                color: Colors.white,
-                                size: 15,
-                                fontWeight: FontWeight.normal,
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    isUserAdmin
-                        ? ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor: sideColorWhite),
-                            onPressed: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => ListSettingsPage(
-                                  listId: widget.listId,
-                                  listName: listName,
-                                  listIcon: listIcon,
-                                  description: listDescription,
-                                  private: private,
-                                ),
-                              ));
-                            },
-                            child: const Row(
+                      ClipRRect(
+                        child: Stack(
+                          children: [
+                            Column(
                               children: [
-                                Icon(
-                                  Icons.settings,
-                                  color: secondaryColor,
+                                Container(
+                                  height: 90,
+                                  width: MediaQuery.of(context).size.width,
+                                  decoration: BoxDecoration(
+                                    image: (listIcon != "")
+                                        ? DecorationImage(
+                                            image: NetworkImage(listIcon),
+                                            fit: BoxFit.cover,
+                                          )
+                                        : const DecorationImage(
+                                            image: AssetImage(
+                                                'assets/watch_later_icon.png'),
+                                            fit: BoxFit.cover),
+                                  ),
                                 ),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                ModifiedText(
-                                  text: 'Settings',
+                                Container(
                                   color: secondaryColor,
-                                  size: 15,
-                                  fontWeight: FontWeight.w500,
+                                  height: 90,
                                 )
                               ],
-                            ))
-                        : ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor: isUserFollowingTheList
-                                    ? primaryColor
-                                    : sideColorWhite),
-                            onPressed: () async {
-                              await customListService
-                                  .handleTheFollowOrUnfollowProcess(
-                                      currentUserId, widget.listId);
+                            ),
+                            Positioned(
+                              top: 65,
+                              left: 20,
 
-                              setState(() {
-                                getListInfoFromDatabase();
-                              });
-                            },
-                            child: Row(
-                              children: [
-                                isUserFollowingTheList
-                                    ? const Icon(
-                                        Icons.done,
-                                        color: secondaryColor,
-                                      )
-                                    : const Icon(
-                                        Icons.ads_click,
-                                        color: secondaryColor,
-                                      ),
-                                const SizedBox(
-                                  width: 10,
+                              // Adjust the left position as needed
+                              child: BackdropFilter(
+                                filter: ImageFilter.blur(
+                                  sigmaX: 40,
+                                  sigmaY: 40,
                                 ),
-                                ModifiedText(
-                                  text: isUserFollowingTheList
-                                      ? 'Following'
-                                      : 'Follow',
-                                  color: isUserFollowingTheList
-                                      ? secondaryColor
-                                      : secondaryColor,
-                                  size: 15,
-                                  fontWeight: FontWeight.w500,
+                                child: HeaderDisplayWidget(context),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      Row(
+                        children: [
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.6,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Column(
+                                  children: [
+                                    ModifiedText(
+                                      text: followers.length.toString(),
+                                      color: Colors.white,
+                                      size: 15,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    const ModifiedText(
+                                      text: 'Followers',
+                                      color: Colors.white,
+                                      size: 15,
+                                      fontWeight: FontWeight.normal,
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(
+                                  width: 20,
+                                ),
+                                Column(
+                                  children: [
+                                    ModifiedText(
+                                      text: contents.length.toString(),
+                                      color: Colors.white,
+                                      size: 15,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    const ModifiedText(
+                                      text: 'Content',
+                                      color: Colors.white,
+                                      size: 15,
+                                      fontWeight: FontWeight.normal,
+                                    ),
+                                  ],
                                 ),
                               ],
-                            )),
-                  ],
-                ),
-                const SizedBox(
-                  height: 15,
-                ),
-                ContentListviewBuilder()
-              ],
+                            ),
+                          ),
+                          isUserAdmin
+                              ? ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                      backgroundColor: sideColorWhite),
+                                  onPressed: () {
+                                    Navigator.of(context)
+                                        .push(MaterialPageRoute(
+                                      builder: (context) => ListSettingsPage(
+                                        listId: widget.listId,
+                                        listName: listName,
+                                        listIcon: listIcon,
+                                        description: listDescription,
+                                        private: private,
+                                      ),
+                                    ));
+                                  },
+                                  child: const Row(
+                                    children: [
+                                      Icon(
+                                        Icons.settings,
+                                        color: secondaryColor,
+                                      ),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      ModifiedText(
+                                        text: 'Settings',
+                                        color: secondaryColor,
+                                        size: 15,
+                                        fontWeight: FontWeight.w500,
+                                      )
+                                    ],
+                                  ))
+                              : ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                      backgroundColor: isUserFollowingTheList
+                                          ? primaryColor
+                                          : sideColorWhite),
+                                  onPressed: () async {
+                                    await customListService
+                                        .handleTheFollowOrUnfollowProcess(
+                                            currentUserId, widget.listId);
+
+                                    setState(() {
+                                      getListInfoFromDatabase();
+                                    });
+                                  },
+                                  child: Row(
+                                    children: [
+                                      isUserFollowingTheList
+                                          ? const Icon(
+                                              Icons.done,
+                                              color: secondaryColor,
+                                            )
+                                          : const Icon(
+                                              Icons.ads_click,
+                                              color: secondaryColor,
+                                            ),
+                                      const SizedBox(
+                                        width: 10,
+                                      ),
+                                      ModifiedText(
+                                        text: isUserFollowingTheList
+                                            ? 'Following'
+                                            : 'Follow',
+                                        color: isUserFollowingTheList
+                                            ? secondaryColor
+                                            : secondaryColor,
+                                        size: 15,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ],
+                                  )),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      ContentListviewBuilder()
+                    ],
+                  ),
+                  const ReturnNavigationButton()
+                ],
+              ),
             ),
-            const ReturnNavigationButton()
-          ],
-        ),
-      ),
     );
   }
 

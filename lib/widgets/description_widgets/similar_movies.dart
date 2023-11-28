@@ -89,9 +89,7 @@ class SimilarMovies extends StatelessWidget {
                 )
               ],
             )
-          : const SizedBox(
-              height: 270,
-            ),
+          : const SizedBox(),
     );
   }
 }

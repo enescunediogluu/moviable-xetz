@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:moviable/constants/colors.dart';
 import 'package:moviable/pages/auth/register_page.dart';
+import 'package:moviable/utils/text.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -33,15 +34,32 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: secondaryColor,
       body: SingleChildScrollView(
           child: Column(children: [
         const SizedBox(
           height: 100,
         ),
-        const Icon(
-          Icons.event_repeat,
-          size: 120,
-          color: primaryColor,
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 30),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              const HeaderText(
+                text: "Sign In",
+                color: sideColorWhite,
+                size: 40,
+                fontWeight: FontWeight.w500,
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              ModifiedText(
+                  text: "Welcome back!",
+                  color: sideColorWhite.withOpacity(0.4),
+                  size: 15)
+            ],
+          ),
         ),
         const SizedBox(
           height: 20,
@@ -55,7 +73,10 @@ class _LoginPageState extends State<LoginPage> {
           keyboardType: TextInputType.emailAddress,
           isItEmail: true,
           label: 'Email',
-          prefixIcon: const Icon(Icons.lock),
+          prefixIcon: const Icon(
+            Icons.lock,
+            color: primaryColor,
+          ),
         ),
         const SizedBox(
           height: 10,
@@ -64,7 +85,10 @@ class _LoginPageState extends State<LoginPage> {
           controller: _password,
           hideText: false,
           isItEmail: false,
-          prefixIcon: const Icon(Icons.key),
+          prefixIcon: const Icon(
+            Icons.key,
+            color: primaryColor,
+          ),
           label: 'Password',
         ),
         const SizedBox(
@@ -97,6 +121,7 @@ class _LoginPageState extends State<LoginPage> {
                     final credential = await FirebaseAuth.instance
                         .signInWithEmailAndPassword(
                             email: email, password: password);
+                    setState(() {});
 
                     log(credential.toString());
                   } on FirebaseAuthException catch (e) {
@@ -128,28 +153,24 @@ class _LoginPageState extends State<LoginPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
-              'Don\'t have an account?',
-              style: TextStyle(
-                color: sideColorWhite,
-                fontSize: 15,
-              ),
+            const ModifiedText(
+              text: "Create an account",
+              color: sideColorWhite,
+              size: 14,
             ),
             TextButton(
-              style: TextButton.styleFrom(),
-              onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => const RegisterPage(),
-                ));
-              },
-              child: const Text(
-                'Register',
-                style: TextStyle(
-                  color: primaryColor,
-                  fontSize: 18,
-                ),
-              ),
-            ),
+                style: TextButton.styleFrom(),
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const RegisterPage(),
+                  ));
+                },
+                child: ModifiedText(
+                  text: "Register",
+                  color: primaryColor.withOpacity(0.8),
+                  size: 15,
+                  fontWeight: FontWeight.w600,
+                )),
           ],
         ),
       ])),

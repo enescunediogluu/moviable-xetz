@@ -25,12 +25,14 @@ class _ListsPageState extends State<ListsPage> {
   List myLists = [];
   List followedLists = [];
   String listName = "";
+  bool isLoading = true;
 
   getFollowedListsFromFirebase() async {
     final temp = await database.getFollowedLists();
 
     setState(() {
       followedLists = temp;
+      isLoading = false;
     });
   }
 
@@ -116,105 +118,116 @@ class _ListsPageState extends State<ListsPage> {
                       height: 500, // Adjust the height as needed
                       child: TabBarView(
                         children: [
-                          GeneralListWidget(
-                            lists: myLists,
-                            colors: const [
-                              Color(0xff252B48),
-                              Color(0xff445069),
-                            ],
-                            onLongPress: (id) {
-                              showModalBottomSheet(
-                                shape: const RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(25),
-                                        topRight: Radius.circular(25))),
-                                context: context,
-                                builder: (context) {
-                                  return Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 10, horizontal: 10),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        const Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Icon(
-                                              Icons.delete_forever,
-                                              size: 20,
-                                            ),
-                                            SizedBox(
-                                              width: 10,
-                                            ),
-                                            ModifiedText(
-                                                text: 'Delete',
-                                                color: Colors.white,
-                                                size: 30),
-                                          ],
-                                        ),
-                                        const ModifiedText(
-                                            text:
-                                                'Are you sure you want to remove it from watch list?',
-                                            color: Colors.white,
-                                            size: 15),
-                                        const SizedBox(
-                                          height: 15,
-                                        ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            ElevatedButton(
-                                                style: ElevatedButton.styleFrom(
-                                                    backgroundColor:
-                                                        primaryColor,
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        15))),
-                                                onPressed: () {
-                                                  Navigator.of(context).pop();
-                                                },
-                                                child: const ModifiedText(
-                                                    text: 'Cancel',
-                                                    color: secondaryColor,
-                                                    size: 15)),
-                                            const SizedBox(
-                                              width: 10,
-                                            ),
-                                            ElevatedButton(
-                                                style: ElevatedButton.styleFrom(
-                                                    backgroundColor:
-                                                        primaryColor,
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        15))),
-                                                onPressed: () {
-                                                  deleteLists(id);
-                                                  Navigator.of(context).pop();
-                                                },
-                                                child: const ModifiedText(
-                                                    text: 'Delete',
-                                                    color: secondaryColor,
-                                                    size: 15))
-                                          ],
-                                        ),
-                                      ],
+                          isLoading
+                              ? Center(
+                                  child: SizedBox(
+                                    width: 35,
+                                    height: 35,
+                                    child: Image.asset(
+                                      "assets/loading_circle2.png",
+                                      fit: BoxFit.cover,
                                     ),
-                                  );
-                                },
-                              );
-                            },
-                            onTap: (id) {
-                              goToListPage(context, id);
-                            },
-                          ),
+                                  ),
+                                )
+                              : GeneralListWidget(
+                                  lists: myLists,
+                                  colors: const [
+                                    Color(0xff252B48),
+                                    Color(0xff445069),
+                                  ],
+                                  onLongPress: (id) {
+                                    showModalBottomSheet(
+                                      shape: const RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.only(
+                                              topLeft: Radius.circular(25),
+                                              topRight: Radius.circular(25))),
+                                      context: context,
+                                      builder: (context) {
+                                        return Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 10, horizontal: 10),
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              const Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Icon(
+                                                    Icons.delete_forever,
+                                                    size: 20,
+                                                  ),
+                                                  SizedBox(
+                                                    width: 10,
+                                                  ),
+                                                  ModifiedText(
+                                                      text: 'Delete',
+                                                      color: Colors.white,
+                                                      size: 30),
+                                                ],
+                                              ),
+                                              const ModifiedText(
+                                                  text:
+                                                      'Are you sure you want to remove it from watch list?',
+                                                  color: Colors.white,
+                                                  size: 15),
+                                              const SizedBox(
+                                                height: 15,
+                                              ),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  ElevatedButton(
+                                                      style: ElevatedButton.styleFrom(
+                                                          backgroundColor:
+                                                              primaryColor,
+                                                          shape: RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          15))),
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
+                                                      child: const ModifiedText(
+                                                          text: 'Cancel',
+                                                          color: secondaryColor,
+                                                          size: 15)),
+                                                  const SizedBox(
+                                                    width: 10,
+                                                  ),
+                                                  ElevatedButton(
+                                                      style: ElevatedButton.styleFrom(
+                                                          backgroundColor:
+                                                              primaryColor,
+                                                          shape: RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          15))),
+                                                      onPressed: () {
+                                                        deleteLists(id);
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
+                                                      child: const ModifiedText(
+                                                          text: 'Delete',
+                                                          color: secondaryColor,
+                                                          size: 15))
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  },
+                                  onTap: (id) {
+                                    goToListPage(context, id);
+                                  },
+                                ),
                           GeneralListWidget(
                             lists: followedLists,
                             colors: const [
@@ -390,56 +403,75 @@ class GeneralListWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       height: 300,
-      child: ListView.builder(
-        physics: const ScrollPhysics(parent: BouncingScrollPhysics()),
-        scrollDirection: Axis.vertical,
-        itemCount: lists.length,
-        itemBuilder: (context, index) {
-          final listDetails = lists[index];
-          final posterPath = listDetails['listIcon'];
-          final title = listDetails['listName'];
-          return InkWell(
-            onTap: () => onTap(listDetails['listId']),
-            onLongPress: () => onLongPress(listDetails['listId']),
-            child: Container(
-              margin: const EdgeInsets.only(bottom: 8),
-              decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                      colors: colors,
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight),
-                  borderRadius: BorderRadius.circular(15)),
-              child: Row(children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  width: 60,
-                  height: 60,
-                  decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(15),
-                          bottomLeft: Radius.circular(15)),
-                      image: DecorationImage(
-                          image: NetworkImage((posterPath != "")
-                              ? posterPath
-                              : 'https://i.pinimg.com/564x/c1/ae/86/c1ae864b0ea941be0362c6d45fad10af.jpg'),
-                          fit: BoxFit.cover)),
-                ),
-                const SizedBox(
-                  width: 20,
-                ),
-                SizedBox(
-                  width: 200,
-                  child: HeaderText(
-                    text: title,
-                    color: Colors.white,
-                    size: 18,
+      child: lists.isEmpty
+          ? Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.close,
+                    color: primaryColor.withOpacity(0.4),
                   ),
-                ),
-              ]),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  ModifiedText(
+                      text: "There is no list yet",
+                      color: sideColorWhite.withOpacity(0.5),
+                      size: 13),
+                ],
+              ),
+            )
+          : ListView.builder(
+              physics: const ScrollPhysics(parent: BouncingScrollPhysics()),
+              scrollDirection: Axis.vertical,
+              itemCount: lists.length,
+              itemBuilder: (context, index) {
+                final listDetails = lists[index];
+                final posterPath = listDetails['listIcon'];
+                final title = listDetails['listName'];
+                return InkWell(
+                  onTap: () => onTap(listDetails['listId']),
+                  onLongPress: () => onLongPress(listDetails['listId']),
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 8),
+                    decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                            colors: colors,
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight),
+                        borderRadius: BorderRadius.circular(15)),
+                    child: Row(children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        width: 60,
+                        height: 60,
+                        decoration: BoxDecoration(
+                            borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(15),
+                                bottomLeft: Radius.circular(15)),
+                            image: DecorationImage(
+                                image: NetworkImage((posterPath != "")
+                                    ? posterPath
+                                    : 'https://i.pinimg.com/564x/c1/ae/86/c1ae864b0ea941be0362c6d45fad10af.jpg'),
+                                fit: BoxFit.cover)),
+                      ),
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      SizedBox(
+                        width: 200,
+                        child: HeaderText(
+                          text: title,
+                          color: Colors.white,
+                          size: 18,
+                        ),
+                      ),
+                    ]),
+                  ),
+                );
+              },
             ),
-          );
-        },
-      ),
     );
   }
 }

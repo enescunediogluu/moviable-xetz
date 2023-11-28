@@ -21,12 +21,14 @@ class _WatchListViewState extends State<WatchListView> {
   final DatabaseService database =
       DatabaseService(FirebaseAuth.instance.currentUser!.uid);
   List<bool> isSelectedList = [];
+  bool isLoading = true;
 
   void getWatchListFromFirebase() async {
     final watchLaterList = await database.getWatchList();
     setState(() {
       watchList = watchLaterList;
       isSelectedList = List.generate(watchList.length, (index) => false);
+      isLoading = false;
     });
   }
 
@@ -79,145 +81,155 @@ class _WatchListViewState extends State<WatchListView> {
           ],
         ),
       ),
-      body: Column(
-        children: [
-          watchList.isEmpty
-              ? Center(
-                  child: Column(
-                    children: [
-                      const SizedBox(
-                        height: 250,
-                      ),
-                      const Icon(
-                        Icons.watch_later_outlined,
-                        color: Colors.amber,
-                      ),
-                      const SizedBox(
-                        height: 15,
-                      ),
-                      ModifiedText(
-                          text: 'There is nothing to show!',
-                          color: Colors.white.withOpacity(0.4),
-                          size: 15),
-                    ],
-                  ),
-                )
-              : SizedBox(
-                  height: MediaQuery.of(context).size.height - 100,
-                  child: GridView.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 0.59,
-                      mainAxisSpacing: 50,
-                      crossAxisSpacing: 5,
-                    ),
-                    physics:
-                        const ScrollPhysics(parent: BouncingScrollPhysics()),
-                    scrollDirection: Axis.vertical,
-                    itemCount: watchList.length,
-                    itemBuilder: (context, index) {
-                      final movieDetails = watchList[index];
-                      final String title = movieDetails['name'];
-                      final String posterUrl = movieDetails['posterUrl'];
-                      final String bannerUrl = movieDetails['bannerUrl'];
-                      final int id = movieDetails['id'];
-                      final String description = movieDetails['description'];
-                      final bool isItMovie = movieDetails['isItMovie'];
-                      final String vote = movieDetails['vote'];
-                      final String launchOn = movieDetails['launchOn'];
+      body: isLoading
+          ? Center(
+              child: SizedBox(
+                  width: 35, child: Image.asset("assets/loading_circle3.png")),
+            )
+          : Column(
+              children: [
+                watchList.isEmpty
+                    ? Center(
+                        child: Column(
+                          children: [
+                            const SizedBox(
+                              height: 250,
+                            ),
+                            const Icon(
+                              Icons.watch_later_outlined,
+                              color: Colors.amber,
+                            ),
+                            const SizedBox(
+                              height: 15,
+                            ),
+                            ModifiedText(
+                                text: 'There is nothing to show!',
+                                color: Colors.white.withOpacity(0.4),
+                                size: 15),
+                          ],
+                        ),
+                      )
+                    : SizedBox(
+                        height: MediaQuery.of(context).size.height - 100,
+                        child: GridView.builder(
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            childAspectRatio: 0.59,
+                            mainAxisSpacing: 50,
+                            crossAxisSpacing: 5,
+                          ),
+                          physics: const ScrollPhysics(
+                              parent: BouncingScrollPhysics()),
+                          scrollDirection: Axis.vertical,
+                          itemCount: watchList.length,
+                          itemBuilder: (context, index) {
+                            final movieDetails = watchList[index];
+                            final String title = movieDetails['name'];
+                            final String posterUrl = movieDetails['posterUrl'];
+                            final String bannerUrl = movieDetails['bannerUrl'];
+                            final int id = movieDetails['id'];
+                            final String description =
+                                movieDetails['description'];
+                            final bool isItMovie = movieDetails['isItMovie'];
+                            final String vote = movieDetails['vote'];
+                            final String launchOn = movieDetails['launchOn'];
 
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => Description(
-                                name: title,
-                                description: description,
-                                bannerUrl: bannerUrl,
-                                posterUrl: posterUrl,
-                                vote: vote,
-                                launchOn: launchOn,
-                                id: id,
-                                isItMovie: isItMovie),
-                          ));
-                        },
-                        onLongPress: () async {
-                          setState(() {
-                            isSelectedList[index] = !isSelectedList[index];
-                          });
-                        },
-                        child: Container(
-                          width: 150, // Set the width as per your design
-                          margin: const EdgeInsets.all(8),
-                          child: Column(
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(15),
-                                child: Container(
-                                    height: 270,
-                                    decoration: BoxDecoration(
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => Description(
+                                      name: title,
+                                      description: description,
+                                      bannerUrl: bannerUrl,
+                                      posterUrl: posterUrl,
+                                      vote: vote,
+                                      launchOn: launchOn,
+                                      id: id,
+                                      isItMovie: isItMovie),
+                                ));
+                              },
+                              onLongPress: () async {
+                                setState(() {
+                                  isSelectedList[index] =
+                                      !isSelectedList[index];
+                                });
+                              },
+                              child: Container(
+                                width: 150, // Set the width as per your design
+                                margin: const EdgeInsets.all(8),
+                                child: Column(
+                                  children: [
+                                    ClipRRect(
                                       borderRadius: BorderRadius.circular(15),
-                                      image: DecorationImage(
-                                        image: NetworkImage(
-                                            'https://image.tmdb.org/t/p/w500/$posterUrl'),
-                                        fit: BoxFit.cover,
+                                      child: Container(
+                                          height: 270,
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(15),
+                                            image: DecorationImage(
+                                              image: NetworkImage(
+                                                  'https://image.tmdb.org/t/p/w500/$posterUrl'),
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                          child: isSelectedList[index]
+                                              ? BackdropFilter(
+                                                  filter: isSelectedList[index]
+                                                      ? ImageFilter.blur(
+                                                          sigmaX: 3, sigmaY: 3)
+                                                      : ImageFilter.blur(),
+                                                  child: Center(
+                                                    child: InkWell(
+                                                      onTap: () async {
+                                                        await showDeleteDialog(
+                                                          context,
+                                                          index,
+                                                          id,
+                                                          () async {
+                                                            await removeFromWatchList(
+                                                                index, id);
+                                                          },
+                                                        );
+                                                        setState(() {
+                                                          isSelectedList[
+                                                              index] = false;
+                                                        });
+                                                      },
+                                                      child: CircleAvatar(
+                                                        backgroundColor:
+                                                            primaryColor
+                                                                .withOpacity(
+                                                                    0.8),
+                                                        radius: 25,
+                                                        child: const Icon(
+                                                          Icons.delete,
+                                                          size: 40,
+                                                          color: secondaryColor,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                )
+                                              : null),
+                                    ),
+                                    const SizedBox(height: 5),
+                                    Center(
+                                      child: ModifiedText(
+                                        text: title,
+                                        size: 13,
+                                        color: Colors.white,
                                       ),
                                     ),
-                                    child: isSelectedList[index]
-                                        ? BackdropFilter(
-                                            filter: isSelectedList[index]
-                                                ? ImageFilter.blur(
-                                                    sigmaX: 3, sigmaY: 3)
-                                                : ImageFilter.blur(),
-                                            child: Center(
-                                              child: InkWell(
-                                                onTap: () async {
-                                                  await showDeleteDialog(
-                                                    context,
-                                                    index,
-                                                    id,
-                                                    () async {
-                                                      await removeFromWatchList(
-                                                          index, id);
-                                                    },
-                                                  );
-                                                  setState(() {
-                                                    isSelectedList[index] =
-                                                        false;
-                                                  });
-                                                },
-                                                child: CircleAvatar(
-                                                  backgroundColor: primaryColor
-                                                      .withOpacity(0.8),
-                                                  radius: 25,
-                                                  child: const Icon(
-                                                    Icons.delete,
-                                                    size: 40,
-                                                    color: secondaryColor,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          )
-                                        : null),
-                              ),
-                              const SizedBox(height: 5),
-                              Center(
-                                child: ModifiedText(
-                                  text: title,
-                                  size: 13,
-                                  color: Colors.white,
+                                  ],
                                 ),
                               ),
-                            ],
-                          ),
+                            );
+                          },
                         ),
-                      );
-                    },
-                  ),
-                ),
-        ],
-      ),
+                      ),
+              ],
+            ),
     );
   }
 
