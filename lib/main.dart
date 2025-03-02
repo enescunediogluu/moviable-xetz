@@ -29,9 +29,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-          brightness: Brightness.dark,
-          primaryColor: Colors.amber,
-          scaffoldBackgroundColor: const Color(0xff191A19)),
+        brightness: Brightness.dark,
+        primaryColor: Colors.amber,
+      ),
       home: const AuthChecker(),
     );
   }

@@ -59,6 +59,7 @@ class _NavbarTrialState extends State<NavbarTrial> {
       backgroundColor: secondaryColor,
       currentIndex: selectedIndex,
       selectedItemColor: primaryColor,
+      unselectedItemColor: Color(0xffF1EEDC),
       onTap: onItemTapped,
       items: const <BottomNavigationBarItem>[
         BottomNavigationBarItem(

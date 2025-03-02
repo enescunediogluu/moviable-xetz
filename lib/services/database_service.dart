@@ -31,7 +31,8 @@ class DatabaseService {
       "createdLists": [],
       "watchLater": [],
       "followedLists": [],
-      "profilePic": profilePic,
+      "profilePic":
+          "https://firebasestorage.googleapis.com/v0/b/moviable-xetz-app.appspot.com/o/profilePhotos%2F1694004793429?alt=media&token=f74e267e-d917-4abd-a9da-7a9ce0d0b02b",
       "userId": uid
     });
   }
@@ -313,7 +314,7 @@ class DatabaseService {
     return results;
   }
 
-  //gett the created lists buy user
+  //gett the created lists by user
   Future<List> getCreatedLists() async {
     DocumentSnapshot snapshot = await userCollection.doc(uid).get();
     if (snapshot.exists) {

@@ -174,9 +174,7 @@ class _RegisterPageState extends State<RegisterPage> {
             TextButton(
                 style: TextButton.styleFrom(),
                 onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => const LoginPage(),
-                  ));
+                  Navigator.of(context).pop();
                 },
                 child: const ModifiedText(
                   text: "Login",

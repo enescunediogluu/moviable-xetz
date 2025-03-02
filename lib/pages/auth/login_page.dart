@@ -1,9 +1,12 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:moviable/constants/colors.dart';
 import 'package:moviable/pages/auth/register_page.dart';
+import 'package:moviable/pages/main/navbar_trial.dart';
 import 'package:moviable/utils/text.dart';
 
 class LoginPage extends StatefulWidget {
@@ -118,12 +121,14 @@ class _LoginPageState extends State<LoginPage> {
                   try {
                     final email = _email.text;
                     final password = _password.text;
-                    final credential = await FirebaseAuth.instance
-                        .signInWithEmailAndPassword(
-                            email: email, password: password);
-                    setState(() {});
+                    await FirebaseAuth.instance.signInWithEmailAndPassword(
+                        email: email, password: password);
 
-                    log(credential.toString());
+                    Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(
+                          builder: (context) => NavbarTrial(),
+                        ),
+                        (root) => false);
                   } on FirebaseAuthException catch (e) {
                     if (e.code == 'user-not-found') {
                       log('No user found for that email.');
